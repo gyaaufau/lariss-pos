@@ -14,9 +14,13 @@ import '../../features/category/presentation/pages/category_detail_page.dart';
 import '../../features/category/presentation/pages/category_form_page.dart';
 import '../../features/checkout/presentation/pages/checkout_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
+import '../../features/history/presentation/pages/transaction_detail_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/manage/presentation/pages/manage_page.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/profile/presentation/pages/edit_store_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/profile/presentation/pages/store_profile_page.dart';
 import '../../features/product/presentation/cubit/product_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 import '../../features/product/presentation/cubit/product_form_cubit.dart';
@@ -37,7 +41,10 @@ class AppRouter {
   static const String homePath = '/home';
   static const String historyPath = '/history';
   static const String trendPath = '/trend';
+  static const String managePath = '/manage';
   static const String profilePath = '/profile';
+  static const String storeProfilePath = '/profile/store';
+  static const String profileEditPath = '/profile/edit';
   static const String checkoutPath = '/home/checkout';
   static const String checkoutSuccessPath = '/home/checkout/success';
   static const String categoriesPath = '/profile/categories';
@@ -45,6 +52,8 @@ class AppRouter {
   static const String stockPath = '/profile/stock';
   static const String categoryCreatePath = '/profile/categories/create';
   static const String productCreatePath = '/profile/products/create';
+
+  static String historyDetailPath(String id) => '/history/$id';
 
   static String categoryDetailPath(String id) => '/profile/categories/$id';
 
@@ -106,6 +115,20 @@ class AppRouter {
                   create: (_) => sl<HistoryCubit>(),
                   child: const HistoryPage(),
                 ),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: ':transactionId',
+                    builder: (context, state) => BlocProvider<HistoryCubit>(
+                      create: (_) => sl<HistoryCubit>(),
+                      child: TransactionDetailPage(
+                        transactionId: state.pathParameters['transactionId']!,
+                        initialTransaction: state.extra is TransactionEntity
+                            ? state.extra! as TransactionEntity
+                            : null,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -123,12 +146,34 @@ class AppRouter {
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
+                path: managePath,
+                builder: (context, state) => const ManagePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
                 path: profilePath,
                 builder: (context, state) => BlocProvider<ProfileCubit>(
                   create: (_) => sl<ProfileCubit>(),
                   child: const ProfilePage(),
                 ),
                 routes: <RouteBase>[
+                  GoRoute(
+                    path: 'store',
+                    builder: (context, state) => BlocProvider<ProfileCubit>(
+                      create: (_) => sl<ProfileCubit>(),
+                      child: const StoreProfilePage(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'edit',
+                    builder: (context, state) => BlocProvider<ProfileCubit>(
+                      create: (_) => sl<ProfileCubit>(),
+                      child: const EditStoreProfilePage(),
+                    ),
+                  ),
                   GoRoute(
                     path: 'categories',
                     builder: (context, state) => BlocProvider<CategoryCubit>(

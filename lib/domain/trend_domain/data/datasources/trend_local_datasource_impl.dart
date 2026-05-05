@@ -1,91 +1,46 @@
 import '../../../../core/database/daos/transactions_dao.dart';
-import '../models/daily_sales_model.dart';
-import '../models/top_product_model.dart';
-import '../models/trend_summary_model.dart';
+import '../../domain/entities/trend_date_filter_entity.dart';
+import '../../domain/entities/trend_range.dart';
+import '../models/trend_dashboard_model.dart';
+import '../../../transaction_domain/data/models/transaction_item_model.dart';
+import '../../../transaction_domain/data/models/transaction_model.dart';
+import '../services/trend_dashboard_aggregator.dart';
 import 'trend_local_datasource.dart';
 
 class TrendLocalDatasourceImpl implements TrendLocalDatasource {
-  const TrendLocalDatasourceImpl(this._transactionsDao);
+  TrendLocalDatasourceImpl(
+    this._transactionsDao, {
+    TrendDashboardAggregator? aggregator,
+    DateTime Function()? nowProvider,
+  }) : _aggregator = aggregator ?? TrendDashboardAggregator(),
+       _nowProvider = nowProvider ?? DateTime.now;
 
   final TransactionsDao _transactionsDao;
+  final TrendDashboardAggregator _aggregator;
+  final DateTime Function() _nowProvider;
 
   @override
-  Future<TrendSummaryModel> getTrendSummary() async {
+  Future<TrendDashboardModel> getTrendDashboard(
+    TrendRange range, {
+    TrendDateFilterEntity? filter,
+  }) async {
     final transactions = await _transactionsDao.getAll();
+    final items = await _transactionsDao.getAllItems();
 
     if (transactions.isEmpty) {
-      return TrendSummaryModel.empty();
+      return TrendDashboardModel.empty(range);
     }
 
-    int totalSales = 0;
-    final Map<String, _DailyAccumulator> dailyMap =
-        <String, _DailyAccumulator>{};
-    final Map<String, _ProductAccumulator> productMap =
-        <String, _ProductAccumulator>{};
-
-    for (final transaction in transactions) {
-      totalSales += transaction.totalAmount;
-
-      final date = DateTime.fromMillisecondsSinceEpoch(transaction.createdAt);
-      final label =
-          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
-      final daily = dailyMap.putIfAbsent(label, _DailyAccumulator.new);
-      daily.totalSales += transaction.totalAmount;
-      daily.totalTransactions += 1;
-
-      final items = await _transactionsDao.getItemsByTransactionId(
-        transaction.id,
-      );
-      for (final item in items) {
-        final product = productMap.putIfAbsent(
-          item.productName,
-          () => _ProductAccumulator(item.productName),
-        );
-        product.totalQuantity += item.quantity;
-        product.totalSales += item.subtotal;
-      }
-    }
-
-    final dailySales = dailyMap.entries
-        .map(
-          (entry) => DailySalesModel(
-            label: entry.key,
-            totalSales: entry.value.totalSales,
-            totalTransactions: entry.value.totalTransactions,
-          ),
-        )
-        .toList(growable: false);
-
-    final topProducts = productMap.values.toList()
-      ..sort((a, b) => b.totalQuantity.compareTo(a.totalQuantity));
-
-    return TrendSummaryModel(
-      totalSales: totalSales,
-      totalTransactions: transactions.length,
-      dailySales: dailySales,
-      topProducts: topProducts
-          .take(5)
-          .map(
-            (item) => TopProductModel(
-              productName: item.productName,
-              totalQuantity: item.totalQuantity,
-              totalSales: item.totalSales,
-            ),
-          )
+    return _aggregator.build(
+      range: range,
+      filter: filter,
+      transactions: transactions
+          .map(TransactionModel.fromTableData)
           .toList(growable: false),
+      items: items
+          .map(TransactionItemModel.fromTableData)
+          .toList(growable: false),
+      now: _nowProvider(),
     );
   }
-}
-
-class _DailyAccumulator {
-  int totalSales = 0;
-  int totalTransactions = 0;
-}
-
-class _ProductAccumulator {
-  _ProductAccumulator(this.productName);
-
-  final String productName;
-  int totalQuantity = 0;
-  int totalSales = 0;
 }

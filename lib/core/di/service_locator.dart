@@ -52,7 +52,7 @@ import '../../domain/trend_domain/data/datasources/trend_local_datasource.dart';
 import '../../domain/trend_domain/data/datasources/trend_local_datasource_impl.dart';
 import '../../domain/trend_domain/data/repositories/trend_repository_impl.dart';
 import '../../domain/trend_domain/domain/repositories/trend_repository.dart';
-import '../../domain/trend_domain/domain/usecases/get_trend_summary.dart';
+import '../../domain/trend_domain/domain/usecases/get_trend_dashboard.dart';
 import '../../features/cart/presentation/cubit/cart_cubit.dart';
 import '../../features/cart/presentation/cubit/checkout_cubit.dart';
 import '../../features/category/presentation/cubit/category_cubit.dart';
@@ -447,15 +447,15 @@ Future<void> setupServiceLocator() async {
     );
   }
 
-  if (!sl.isRegistered<GetTrendSummary>()) {
-    sl.registerLazySingleton<GetTrendSummary>(
-      () => GetTrendSummary(sl<TrendRepository>()),
+  if (!sl.isRegistered<GetTrendDashboard>()) {
+    sl.registerLazySingleton<GetTrendDashboard>(
+      () => GetTrendDashboard(sl<TrendRepository>()),
     );
   }
 
   if (!sl.isRegistered<TrendCubit>()) {
     sl.registerFactory<TrendCubit>(
-      () => TrendCubit(getTrendSummary: sl<GetTrendSummary>()),
+      () => TrendCubit(getTrendDashboard: sl<GetTrendDashboard>()),
     );
   }
 }

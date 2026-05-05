@@ -98,8 +98,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       ownerName: ownerName,
     );
 
-    return await profileResult.match(
-      (failure) async {
+    return profileResult.match(
+      (failure) {
         emit(
           state.copyWith(
             status: ProfileStatus.failure,
@@ -109,37 +109,55 @@ class ProfileCubit extends Cubit<ProfileState> {
         );
         return false;
       },
-      (profile) async {
-        final settingsResult = await _saveAppSettings(
-          lowStockAlertEnabled: state.settings.lowStockAlertEnabled,
-          showOutOfStockProducts: state.settings.showOutOfStockProducts,
+      (profile) {
+        emit(
+          state.copyWith(
+            status: ProfileStatus.success,
+            profile: profile,
+            successMessage: 'Profil toko berhasil disimpan.',
+            clearErrorMessage: true,
+          ),
         );
+        return true;
+      },
+    );
+  }
 
-        return settingsResult.match(
-          (failure) {
-            emit(
-              state.copyWith(
-                status: ProfileStatus.failure,
-                profile: profile,
-                errorMessage: failure.message,
-                clearSuccessMessage: true,
-              ),
-            );
-            return false;
-          },
-          (settings) {
-            emit(
-              state.copyWith(
-                status: ProfileStatus.success,
-                profile: profile,
-                settings: settings,
-                successMessage: 'Profile dan settings berhasil disimpan.',
-                clearErrorMessage: true,
-              ),
-            );
-            return true;
-          },
+  Future<bool> saveSettings() async {
+    emit(
+      state.copyWith(
+        status: ProfileStatus.submitting,
+        clearErrorMessage: true,
+        clearSuccessMessage: true,
+      ),
+    );
+
+    final settingsResult = await _saveAppSettings(
+      lowStockAlertEnabled: state.settings.lowStockAlertEnabled,
+      showOutOfStockProducts: state.settings.showOutOfStockProducts,
+    );
+
+    return settingsResult.match(
+      (failure) {
+        emit(
+          state.copyWith(
+            status: ProfileStatus.failure,
+            errorMessage: failure.message,
+            clearSuccessMessage: true,
+          ),
         );
+        return false;
+      },
+      (settings) {
+        emit(
+          state.copyWith(
+            status: ProfileStatus.success,
+            settings: settings,
+            successMessage: 'Settings berhasil disimpan.',
+            clearErrorMessage: true,
+          ),
+        );
+        return true;
       },
     );
   }

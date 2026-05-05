@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/formatters.dart';
 import '../../../../domain/transaction_domain/domain/entities/transaction_entity.dart';
 import '../cubit/history_cubit.dart';
 import '../cubit/history_state.dart';
@@ -22,15 +25,9 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Future<void> _openDetail(TransactionEntity transaction) async {
-    final detail = await context.read<HistoryCubit>().getDetail(transaction.id);
-    if (!mounted || detail == null) {
-      return;
-    }
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => _TransactionDetailSheet(transaction: detail),
+    await context.push(
+      AppRouter.historyDetailPath(transaction.id),
+      extra: transaction,
     );
   }
 
@@ -132,7 +129,7 @@ class _TransactionCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    _formatCurrency(transaction.totalAmount),
+                    formatCurrency(transaction.totalAmount),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: const Color(0xFF2563EB),
                     ),
@@ -141,7 +138,7 @@ class _TransactionCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                '${transaction.totalItem} item • ${_formatDate(transaction.createdAt)}',
+                '${transaction.totalItem} item • ${formatDateTime(transaction.createdAt)}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 12),
@@ -149,7 +146,7 @@ class _TransactionCard extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      'Bayar ${_formatCurrency(transaction.paidAmount)}',
+                      'Bayar ${formatCurrency(transaction.paidAmount)}',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
@@ -159,104 +156,6 @@ class _TransactionCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _TransactionDetailSheet extends StatelessWidget {
-  const _TransactionDetailSheet({required this.transaction});
-
-  final TransactionEntity transaction;
-
-  @override
-  Widget build(BuildContext context) {
-    final viewInsets = MediaQuery.of(context).viewInsets;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, viewInsets.bottom + 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            transaction.invoiceNumber,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            _formatDate(transaction.createdAt),
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 16),
-          if (transaction.items.isEmpty)
-            const Text('Belum ada item detail untuk transaksi ini.')
-          else
-            ...transaction.items.map(
-              (item) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            item.productName,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${item.quantity} x ${_formatCurrency(item.productPrice)}',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(_formatCurrency(item.subtotal)),
-                  ],
-                ),
-              ),
-            ),
-          const SizedBox(height: 12),
-          const Divider(),
-          const SizedBox(height: 12),
-          _DetailRow(
-            label: 'Total',
-            value: _formatCurrency(transaction.totalAmount),
-          ),
-          _DetailRow(
-            label: 'Bayar',
-            value: _formatCurrency(transaction.paidAmount),
-          ),
-          _DetailRow(
-            label: 'Kembalian',
-            value: _formatCurrency(transaction.changeAmount),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: <Widget>[
-          Expanded(child: Text(label)),
-          const SizedBox(width: 12),
-          Text(value, style: Theme.of(context).textTheme.titleSmall),
-        ],
       ),
     );
   }
@@ -298,16 +197,4 @@ class _EmptyHistoryState extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatCurrency(int value) => 'Rp$value';
-
-String _formatDate(int epochMs) {
-  final date = DateTime.fromMillisecondsSinceEpoch(epochMs);
-  final day = date.day.toString().padLeft(2, '0');
-  final month = date.month.toString().padLeft(2, '0');
-  final year = date.year.toString();
-  final hour = date.hour.toString().padLeft(2, '0');
-  final minute = date.minute.toString().padLeft(2, '0');
-  return '$day/$month/$year $hour:$minute';
 }

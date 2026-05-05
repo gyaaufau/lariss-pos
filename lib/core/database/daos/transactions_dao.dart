@@ -30,6 +30,14 @@ class TransactionsDao extends DatabaseAccessor<AppDatabase>
         .get();
   }
 
+  Future<List<TransactionItemsTableData>> getAllItems() {
+    return (select(transactionItemsTable)
+          ..orderBy(<OrderClauseGenerator<$TransactionItemsTableTable>>[
+            (tbl) => OrderingTerm.asc(tbl.createdAt),
+          ]))
+        .get();
+  }
+
   Future<void> createTransaction(TransactionsTableCompanion entry) async {
     await into(transactionsTable).insert(entry);
   }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/formatters.dart';
 import '../../../../domain/cart_domain/domain/entities/cart_item_entity.dart';
 import '../../../../domain/transaction_domain/domain/entities/transaction_entity.dart';
 import '../../../cart/presentation/cubit/cart_cubit.dart';
@@ -132,7 +133,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                             _SummaryRow(
                               label: 'Total bayar',
-                              value: _formatCurrency(cartState.totalAmount),
+                              value: formatCurrency(cartState.totalAmount),
                               highlight: true,
                             ),
                           ],
@@ -167,8 +168,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             _SummaryRow(
                               label: 'Kembalian',
                               value: changePreview < 0
-                                  ? 'Kurang ${_formatCurrency(changePreview.abs())}'
-                                  : _formatCurrency(changePreview),
+                                  ? 'Kurang ${formatCurrency(changePreview.abs())}'
+                                  : formatCurrency(changePreview),
                               valueColor: changePreview < 0
                                   ? const Color(0xFFB91C1C)
                                   : const Color(0xFF166534),
@@ -254,15 +255,15 @@ class CheckoutSuccessPage extends StatelessWidget {
                     const SizedBox(height: 20),
                     _SummaryRow(
                       label: 'Total',
-                      value: _formatCurrency(transaction.totalAmount),
+                      value: formatCurrency(transaction.totalAmount),
                     ),
                     _SummaryRow(
                       label: 'Dibayar',
-                      value: _formatCurrency(transaction.paidAmount),
+                      value: formatCurrency(transaction.paidAmount),
                     ),
                     _SummaryRow(
                       label: 'Kembalian',
-                      value: _formatCurrency(transaction.changeAmount),
+                      value: formatCurrency(transaction.changeAmount),
                       valueColor: const Color(0xFF166534),
                     ),
                   ],
@@ -280,8 +281,11 @@ class CheckoutSuccessPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () => context.go(AppRouter.historyPath),
-                  child: const Text('Lihat riwayat'),
+                  onPressed: () => context.go(
+                    AppRouter.historyDetailPath(transaction.id),
+                    extra: transaction,
+                  ),
+                  child: const Text('Lihat detail invoice'),
                 ),
               ),
             ],
@@ -312,14 +316,14 @@ class _CheckoutItemTile extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '${item.quantity} x ${_formatCurrency(item.price)}',
+                '${item.quantity} x ${formatCurrency(item.price)}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
         ),
         const SizedBox(width: 12),
-        Text(_formatCurrency(item.subtotal)),
+        Text(formatCurrency(item.subtotal)),
       ],
     );
   }
@@ -392,5 +396,3 @@ class _EmptyCheckoutState extends StatelessWidget {
     );
   }
 }
-
-String _formatCurrency(int value) => 'Rp$value';

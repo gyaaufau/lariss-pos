@@ -1,5 +1,10 @@
-import '../models/trend_summary_model.dart';
+import '../../domain/entities/trend_date_filter_entity.dart';
+import '../../domain/entities/trend_range.dart';
+import '../models/trend_dashboard_model.dart';
 
 abstract class TrendLocalDatasource {
-  Future<TrendSummaryModel> getTrendSummary();
+  Future<TrendDashboardModel> getTrendDashboard(
+    TrendRange range, {
+    TrendDateFilterEntity? filter,
+  });
 }

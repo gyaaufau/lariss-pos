@@ -3,6 +3,8 @@ import '../models/product_model.dart';
 abstract class ProductLocalDatasource {
   Future<List<ProductModel>> getProducts();
 
+  Future<ProductModel?> getProductById(String id);
+
   Future<ProductModel> createProduct({
     required String categoryId,
     required String name,

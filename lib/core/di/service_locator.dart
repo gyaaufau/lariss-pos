@@ -11,13 +11,17 @@ import '../../domain/category_domain/data/datasources/category_local_datasource_
 import '../../domain/category_domain/data/repositories/category_repository_impl.dart';
 import '../../domain/category_domain/domain/repositories/category_repository.dart';
 import '../../domain/category_domain/domain/usecases/create_category.dart';
+import '../../domain/category_domain/domain/usecases/delete_category.dart';
+import '../../domain/category_domain/domain/usecases/get_category_by_id.dart';
 import '../../domain/category_domain/domain/usecases/get_categories.dart';
+import '../../domain/category_domain/domain/usecases/update_category.dart';
 import '../../domain/product_domain/data/datasources/product_local_datasource.dart';
 import '../../domain/product_domain/data/datasources/product_local_datasource_impl.dart';
 import '../../domain/product_domain/data/repositories/product_repository_impl.dart';
 import '../../domain/product_domain/domain/repositories/product_repository.dart';
 import '../../domain/product_domain/domain/usecases/create_product.dart';
 import '../../domain/product_domain/domain/usecases/delete_product.dart';
+import '../../domain/product_domain/domain/usecases/get_product_by_id.dart';
 import '../../domain/product_domain/domain/usecases/get_products.dart';
 import '../../domain/product_domain/domain/usecases/update_product.dart';
 import '../../domain/profile_domain/data/datasources/profile_local_datasource.dart';
@@ -33,6 +37,8 @@ import '../../domain/stock_domain/data/datasources/stock_local_datasource_impl.d
 import '../../domain/stock_domain/data/repositories/stock_repository_impl.dart';
 import '../../domain/stock_domain/domain/repositories/stock_repository.dart';
 import '../../domain/stock_domain/domain/usecases/get_low_stock_products.dart';
+import '../../domain/stock_domain/domain/usecases/get_stock_movements_by_product_id.dart';
+import '../../domain/stock_domain/domain/usecases/get_stock_product_by_id.dart';
 import '../../domain/stock_domain/domain/usecases/get_stock_products.dart';
 import '../../domain/stock_domain/domain/usecases/update_stock.dart';
 import '../../domain/transaction_domain/data/datasources/transaction_local_datasource.dart';
@@ -50,10 +56,16 @@ import '../../domain/trend_domain/domain/usecases/get_trend_summary.dart';
 import '../../features/cart/presentation/cubit/cart_cubit.dart';
 import '../../features/cart/presentation/cubit/checkout_cubit.dart';
 import '../../features/category/presentation/cubit/category_cubit.dart';
+import '../../features/category/presentation/cubit/category_detail_cubit.dart';
+import '../../features/category/presentation/cubit/category_form_cubit.dart';
 import '../../features/history/presentation/cubit/history_cubit.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/product/presentation/cubit/product_detail_cubit.dart';
+import '../../features/product/presentation/cubit/product_form_cubit.dart';
 import '../../features/product/presentation/cubit/product_cubit.dart';
+import '../../features/stock/presentation/cubit/stock_detail_cubit.dart';
 import '../../features/stock/presentation/cubit/stock_cubit.dart';
+import '../../features/stock/presentation/cubit/stock_update_cubit.dart';
 import '../../features/trend/presentation/cubit/trend_cubit.dart';
 import '../router/app_router.dart';
 
@@ -70,7 +82,10 @@ Future<void> setupServiceLocator() async {
 
   if (!sl.isRegistered<CategoryLocalDatasource>()) {
     sl.registerLazySingleton<CategoryLocalDatasource>(
-      () => CategoryLocalDatasourceImpl(sl<AppDatabase>().categoriesDao),
+      () => CategoryLocalDatasourceImpl(
+        sl<AppDatabase>().categoriesDao,
+        sl<AppDatabase>().productsDao,
+      ),
     );
   }
 
@@ -92,11 +107,45 @@ Future<void> setupServiceLocator() async {
     );
   }
 
+  if (!sl.isRegistered<GetCategoryById>()) {
+    sl.registerLazySingleton<GetCategoryById>(
+      () => GetCategoryById(sl<CategoryRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<UpdateCategory>()) {
+    sl.registerLazySingleton<UpdateCategory>(
+      () => UpdateCategory(sl<CategoryRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<DeleteCategory>()) {
+    sl.registerLazySingleton<DeleteCategory>(
+      () => DeleteCategory(sl<CategoryRepository>()),
+    );
+  }
+
   if (!sl.isRegistered<CategoryCubit>()) {
     sl.registerFactory<CategoryCubit>(
-      () => CategoryCubit(
-        getCategories: sl<GetCategories>(),
+      () => CategoryCubit(getCategories: sl<GetCategories>()),
+    );
+  }
+
+  if (!sl.isRegistered<CategoryDetailCubit>()) {
+    sl.registerFactory<CategoryDetailCubit>(
+      () => CategoryDetailCubit(
+        getCategoryById: sl<GetCategoryById>(),
+        deleteCategory: sl<DeleteCategory>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<CategoryFormCubit>()) {
+    sl.registerFactory<CategoryFormCubit>(
+      () => CategoryFormCubit(
         createCategory: sl<CreateCategory>(),
+        getCategoryById: sl<GetCategoryById>(),
+        updateCategory: sl<UpdateCategory>(),
       ),
     );
   }
@@ -137,6 +186,12 @@ Future<void> setupServiceLocator() async {
     );
   }
 
+  if (!sl.isRegistered<GetProductById>()) {
+    sl.registerLazySingleton<GetProductById>(
+      () => GetProductById(sl<ProductRepository>()),
+    );
+  }
+
   if (!sl.isRegistered<ProductCubit>()) {
     sl.registerFactory<ProductCubit>(
       () => ProductCubit(
@@ -145,6 +200,27 @@ Future<void> setupServiceLocator() async {
         updateProduct: sl<UpdateProduct>(),
         deleteProduct: sl<DeleteProduct>(),
         getCategories: sl<GetCategories>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<ProductDetailCubit>()) {
+    sl.registerFactory<ProductDetailCubit>(
+      () => ProductDetailCubit(
+        getProductById: sl<GetProductById>(),
+        getCategories: sl<GetCategories>(),
+        deleteProduct: sl<DeleteProduct>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<ProductFormCubit>()) {
+    sl.registerFactory<ProductFormCubit>(
+      () => ProductFormCubit(
+        getCategories: sl<GetCategories>(),
+        getProductById: sl<GetProductById>(),
+        createProduct: sl<CreateProduct>(),
+        updateProduct: sl<UpdateProduct>(),
       ),
     );
   }
@@ -268,11 +344,41 @@ Future<void> setupServiceLocator() async {
     );
   }
 
+  if (!sl.isRegistered<GetStockProductById>()) {
+    sl.registerLazySingleton<GetStockProductById>(
+      () => GetStockProductById(sl<StockRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetStockMovementsByProductId>()) {
+    sl.registerLazySingleton<GetStockMovementsByProductId>(
+      () => GetStockMovementsByProductId(sl<StockRepository>()),
+    );
+  }
+
   if (!sl.isRegistered<StockCubit>()) {
     sl.registerFactory<StockCubit>(
       () => StockCubit(
         getStockProducts: sl<GetStockProducts>(),
         getLowStockProducts: sl<GetLowStockProducts>(),
+        updateStock: sl<UpdateStock>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<StockDetailCubit>()) {
+    sl.registerFactory<StockDetailCubit>(
+      () => StockDetailCubit(
+        getStockProductById: sl<GetStockProductById>(),
+        getStockMovementsByProductId: sl<GetStockMovementsByProductId>(),
+      ),
+    );
+  }
+
+  if (!sl.isRegistered<StockUpdateCubit>()) {
+    sl.registerFactory<StockUpdateCubit>(
+      () => StockUpdateCubit(
+        getStockProductById: sl<GetStockProductById>(),
         updateStock: sl<UpdateStock>(),
       ),
     );

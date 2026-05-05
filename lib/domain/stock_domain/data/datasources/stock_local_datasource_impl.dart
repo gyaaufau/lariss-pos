@@ -4,6 +4,7 @@ import '../../../../core/database/app_database.dart';
 import '../../../../core/database/daos/products_dao.dart';
 import '../../../../core/database/daos/stock_movements_dao.dart';
 import '../../domain/entities/stock_update_type.dart';
+import '../models/stock_movement_model.dart';
 import '../models/stock_product_model.dart';
 import 'stock_local_datasource.dart';
 
@@ -26,6 +27,26 @@ class StockLocalDatasourceImpl implements StockLocalDatasource {
 
     return products
         .map(StockProductModel.fromTableData)
+        .toList(growable: false);
+  }
+
+  @override
+  Future<StockProductModel?> getProductById(String productId) async {
+    final product = await _productsDao.getById(productId);
+    if (product == null || !product.isActive) {
+      return null;
+    }
+
+    return StockProductModel.fromTableData(product);
+  }
+
+  @override
+  Future<List<StockMovementModel>> getMovementsByProductId(
+    String productId,
+  ) async {
+    final movements = await _stockMovementsDao.getByProductId(productId);
+    return movements
+        .map(StockMovementModel.fromTableData)
         .toList(growable: false);
   }
 

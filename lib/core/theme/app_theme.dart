@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData light() {
-    const primary = Color(0xFF2563EB);
-    const background = Color(0xFFF8FAFC);
+    const primary = Color(0xFF14B88F);
+    const background = Color(0xFFF4FBF7);
     const textPrimary = Color(0xFF0F172A);
     const textSecondary = Color(0xFF64748B);
-    const border = Color(0xFFE2E8F0);
+    const border = Color(0xFFD7EDE4);
 
     final base = ThemeData(
       useMaterial3: true,

@@ -58,6 +58,16 @@ class ProductLocalDatasourceImpl implements ProductLocalDatasource {
   }
 
   @override
+  Future<ProductModel?> getProductById(String id) async {
+    final product = await _productsDao.getById(id);
+    if (product == null) {
+      return null;
+    }
+
+    return ProductModel.fromTableData(product);
+  }
+
+  @override
   Future<ProductModel> updateProduct({
     required String id,
     required String categoryId,

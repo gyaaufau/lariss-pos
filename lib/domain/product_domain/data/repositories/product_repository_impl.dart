@@ -74,6 +74,24 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
+  Future<Either<Failure, ProductEntity>> getProductById(String id) async {
+    try {
+      if (id.trim().isEmpty) {
+        return left(Failure('Produk tidak valid.'));
+      }
+
+      final product = await _localDatasource.getProductById(id);
+      if (product == null) {
+        return left(Failure('Produk tidak ditemukan.'));
+      }
+
+      return right(product);
+    } catch (_) {
+      return left(Failure('Gagal memuat detail produk.'));
+    }
+  }
+
+  @override
   Future<Either<Failure, ProductEntity>> updateProduct({
     required String id,
     required String categoryId,

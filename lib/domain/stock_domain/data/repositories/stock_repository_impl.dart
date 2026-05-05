@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/failure.dart';
+import '../../domain/entities/stock_movement_entity.dart';
 import '../../domain/entities/stock_product_entity.dart';
 import '../../domain/entities/stock_update_type.dart';
 import '../../domain/repositories/stock_repository.dart';
@@ -33,6 +34,44 @@ class StockRepositoryImpl implements StockRepository {
       return right(products);
     } catch (_) {
       return left(Failure('Gagal memuat data stok.'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, StockProductEntity>> getProductById(
+    String productId,
+  ) async {
+    try {
+      if (productId.trim().isEmpty) {
+        return left(Failure('Produk tidak valid.'));
+      }
+
+      final product = await _localDatasource.getProductById(productId);
+      if (product == null) {
+        return left(Failure('Produk stok tidak ditemukan.'));
+      }
+
+      return right(product);
+    } catch (_) {
+      return left(Failure('Gagal memuat detail stok.'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<StockMovementEntity>>> getMovementsByProductId(
+    String productId,
+  ) async {
+    try {
+      if (productId.trim().isEmpty) {
+        return left(Failure('Produk tidak valid.'));
+      }
+
+      final movements = await _localDatasource.getMovementsByProductId(
+        productId,
+      );
+      return right(movements);
+    } catch (_) {
+      return left(Failure('Gagal memuat riwayat stok.'));
     }
   }
 

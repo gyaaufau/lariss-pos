@@ -20,9 +20,9 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<CategoriesTableData?> getById(String categoryId) {
-    return (select(
-      categoriesTable,
-    )..where((tbl) => tbl.id.equals(categoryId))).getSingleOrNull();
+    return (select(categoriesTable)
+          ..where((tbl) => tbl.id.equals(categoryId) & tbl.deletedAt.isNull()))
+        .getSingleOrNull();
   }
 
   Future<void> upsertCategory(CategoriesTableCompanion entry) async {

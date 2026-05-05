@@ -31,4 +31,20 @@ class CategoryModel extends CategoryEntity {
       deletedAt: Value(deletedAt),
     );
   }
+
+  CategoryModel copyWith({
+    String? id,
+    String? name,
+    int? createdAt,
+    int? updatedAt,
+    int? deletedAt,
+  }) {
+    return CategoryModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
+  }
 }

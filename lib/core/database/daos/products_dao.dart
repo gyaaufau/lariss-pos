@@ -29,9 +29,22 @@ class ProductsDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<ProductsTableData?> getById(String productId) {
-    return (select(
-      productsTable,
-    )..where((tbl) => tbl.id.equals(productId))).getSingleOrNull();
+    return (select(productsTable)
+          ..where((tbl) => tbl.id.equals(productId) & tbl.deletedAt.isNull()))
+        .getSingleOrNull();
+  }
+
+  Future<int> countByCategoryId(String categoryId) async {
+    final countExpression = productsTable.id.count();
+    final query = selectOnly(productsTable)
+      ..addColumns([countExpression])
+      ..where(
+        productsTable.categoryId.equals(categoryId) &
+            productsTable.deletedAt.isNull(),
+      );
+
+    final row = await query.getSingle();
+    return row.read(countExpression) ?? 0;
   }
 
   Future<void> updateStock({

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/app_router.dart';
 import '../cubit/category_cubit.dart';
 import '../cubit/category_state.dart';
 
@@ -12,43 +14,39 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
-  late final TextEditingController _nameController;
-
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CategoryCubit>().loadCategories();
     });
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    final cubit = context.read<CategoryCubit>();
-    final created = await cubit.createCategory(_nameController.text);
-
+  Future<void> _openCreatePage() async {
+    await context.push(AppRouter.categoryCreatePath);
     if (!mounted) {
       return;
     }
+    await context.read<CategoryCubit>().loadCategories();
+  }
 
-    if (created) {
-      _nameController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kategori berhasil ditambah.')),
-      );
+  Future<void> _openDetailPage(String categoryId) async {
+    await context.push(AppRouter.categoryDetailPath(categoryId));
+    if (!mounted) {
+      return;
     }
+    await context.read<CategoryCubit>().loadCategories();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Kategori')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openCreatePage,
+        icon: const Icon(Icons.add),
+        label: const Text('Tambah'),
+      ),
       body: BlocConsumer<CategoryCubit, CategoryState>(
         listener: (context, state) {
           if (state.status == CategoryStatus.failure &&
@@ -59,16 +57,15 @@ class _CategoriesPageState extends State<CategoriesPage> {
           }
         },
         builder: (context, state) {
-          final bool isSubmitting = state.status == CategoryStatus.submitting;
           final bool isLoading =
               state.status == CategoryStatus.loading &&
               state.categories.isEmpty;
 
           return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: RefreshIndicator(
+              onRefresh: () => context.read<CategoryCubit>().loadCategories(),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
                 children: <Widget>[
                   Text(
                     'Kelola kategori produk.',
@@ -76,86 +73,78 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Day 3 fokus: list kategori dan tambah kategori baru lewat local database.',
+                    'Pisah list, detail, dan form supaya flow lebih rapi untuk app mobile.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 20),
-                  TextField(
-                    controller: _nameController,
-                    textInputAction: TextInputAction.done,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama kategori',
-                      hintText: 'Contoh: Minuman',
-                    ),
-                    onSubmitted: (_) => _submit(),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: isSubmitting ? null : _submit,
-                      child: Text(
-                        isSubmitting ? 'Menyimpan...' : 'Tambah kategori',
+                  if (isLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 48),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (state.categories.isEmpty)
+                    const _EmptyCategoryState()
+                  else
+                    ...state.categories.map(
+                      (category) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _CategoryCard(
+                          name: category.name,
+                          onTap: () => _openDetailPage(category.id),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Daftar kategori',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : state.categories.isEmpty
-                        ? const _EmptyCategoryState()
-                        : ListView.separated(
-                            itemCount: state.categories.length,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final category = state.categories[index];
-
-                              return Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: const Color(0xFFE2E8F0),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      width: 12,
-                                      height: 12,
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFF2563EB),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        category.name,
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.titleSmall,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                  ),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _CategoryCard extends StatelessWidget {
+  const _CategoryCard({required this.name, required this.onTap});
+
+  final String name;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: 12,
+                height: 12,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2563EB),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  name,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -175,7 +164,6 @@ class _EmptyCategoryState extends StatelessWidget {
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(
             'Belum ada kategori.',
@@ -183,7 +171,7 @@ class _EmptyCategoryState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Tambah kategori pertama supaya produk nanti bisa dikelompokkan.',
+            'Tambah kategori pertama dari tombol di kanan bawah.',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),

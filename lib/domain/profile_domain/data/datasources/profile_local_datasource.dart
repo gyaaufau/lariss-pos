@@ -13,6 +13,6 @@ abstract class ProfileLocalDatasource {
 
   Future<AppSettingsModel> saveAppSettings({
     required bool lowStockAlertEnabled,
-    required bool showOutOfStockProducts,
+    required bool onboardingCompleted,
   });
 }

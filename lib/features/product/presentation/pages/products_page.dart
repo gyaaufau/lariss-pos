@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/app_status_chip.dart';
 import '../cubit/product_cubit.dart';
 import '../cubit/product_state.dart';
 
@@ -86,25 +88,25 @@ class _ProductsPageState extends State<ProductsPage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<ProductCubit>().loadProducts(),
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 children: <Widget>[
                   Text(
                     'Kelola produk untuk transaksi harian.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     'List, detail, dan form dipisah agar alur lebih siap rilis.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   if (state.categories.isEmpty)
                     _MissingCategoryCard(
                       onTap: () => context.push(AppRouter.categoriesPath),
                     )
                   else if (isLoading)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 48),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 48.h),
                       child: Center(child: CircularProgressIndicator()),
                     )
                   else if (state.products.isEmpty)
@@ -112,7 +114,7 @@ class _ProductsPageState extends State<ProductsPage> {
                   else
                     ...state.products.map(
                       (product) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding: EdgeInsets.only(bottom: 12.h),
                         child: _ProductCard(
                           name: product.name,
                           categoryName: _categoryName(
@@ -120,9 +122,8 @@ class _ProductsPageState extends State<ProductsPage> {
                             product.categoryId,
                           ),
                           price: formatCurrency(product.sellingPrice),
-                          stockLabel:
-                              'Stok ${product.currentStock} • Min ${product.minimumStock}',
                           isActive: product.isActive,
+                          isOutOfStock: product.isOutOfStock,
                           isLowStock: product.isLowStock,
                           onTap: () => _openDetail(product.id),
                         ),
@@ -143,8 +144,8 @@ class _ProductCard extends StatelessWidget {
     required this.name,
     required this.categoryName,
     required this.price,
-    required this.stockLabel,
     required this.isActive,
+    required this.isOutOfStock,
     required this.isLowStock,
     required this.onTap,
   });
@@ -152,8 +153,8 @@ class _ProductCard extends StatelessWidget {
   final String name;
   final String categoryName;
   final String price;
-  final String stockLabel;
   final bool isActive;
+  final bool isOutOfStock;
   final bool isLowStock;
   final VoidCallback onTap;
 
@@ -161,14 +162,14 @@ class _ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(20.r),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.r),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20.r),
             border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
           child: Column(
@@ -185,52 +186,27 @@ class _ProductCard extends StatelessWidget {
                   const Icon(Icons.chevron_right),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Text(categoryName),
-              const SizedBox(height: 4),
+              SizedBox(height: 4.h),
               Text(price, style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: <Widget>[
-                  _Tag(
-                    label: isActive ? 'Aktif' : 'Nonaktif',
-                    color: isActive
-                        ? const Color(0xFFDCFCE7)
-                        : const Color(0xFFE2E8F0),
-                  ),
-                  _Tag(
-                    label: stockLabel,
-                    color: isLowStock
-                        ? const Color(0xFFFFEDD5)
-                        : const Color(0xFFDBEAFE),
-                  ),
+                  isActive ? AppStatusChip.active() : AppStatusChip.inactive(),
+                  isOutOfStock
+                      ? AppStatusChip.outOfStock()
+                      : isLowStock
+                      ? AppStatusChip.lowStock()
+                      : AppStatusChip.safe(),
                 ],
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _Tag extends StatelessWidget {
-  const _Tag({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(label),
     );
   }
 }
@@ -243,10 +219,10 @@ class _MissingCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: const Color(0xFFFCD34D)),
       ),
       child: Column(
@@ -255,13 +231,13 @@ class _MissingCategoryCard extends StatelessWidget {
             'Buat kategori dulu.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Produk butuh kategori aktif sebelum bisa dibuat.',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           FilledButton(onPressed: onTap, child: const Text('Buka kategori')),
         ],
       ),
@@ -275,10 +251,10 @@ class _EmptyProductState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
@@ -287,7 +263,7 @@ class _EmptyProductState extends StatelessWidget {
             'Belum ada produk.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Tambah produk pertama dari tombol di kanan bawah.',
             textAlign: TextAlign.center,

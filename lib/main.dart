@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/di/service_locator.dart';
 import 'core/router/app_router.dart';
@@ -16,11 +17,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Lariss POS',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      routerConfig: sl<AppRouter>().router,
+    return ScreenUtilInit(
+      designSize: const Size(390, 844),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return MaterialApp.router(
+          title: 'Lariss POS',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light(),
+          routerConfig: sl<AppRouter>().router,
+        );
+      },
     );
   }
 }

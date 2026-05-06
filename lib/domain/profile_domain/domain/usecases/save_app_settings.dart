@@ -11,11 +11,11 @@ class SaveAppSettings {
 
   Future<Either<Failure, AppSettingsEntity>> call({
     required bool lowStockAlertEnabled,
-    required bool showOutOfStockProducts,
+    required bool onboardingCompleted,
   }) {
     return _repository.saveAppSettings(
       lowStockAlertEnabled: lowStockAlertEnabled,
-      showOutOfStockProducts: showOutOfStockProducts,
+      onboardingCompleted: onboardingCompleted,
     );
   }
 }

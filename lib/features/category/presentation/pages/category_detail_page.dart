@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -94,7 +95,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
           return SafeArea(
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               children: <Widget>[
                 _DetailCard(
                   title: category.name,
@@ -103,14 +104,14 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                       label: 'Dibuat',
                       value: formatDateTime(category.createdAt),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _InfoRow(
                       label: 'Diubah',
                       value: formatDateTime(category.updatedAt),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -119,7 +120,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                     label: const Text('Edit kategori'),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12.h),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -146,17 +147,17 @@ class _DetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           ...children,
         ],
       ),
@@ -175,7 +176,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(label)),
-        const SizedBox(width: 16),
+        SizedBox(width: 16.w),
         Text(value, style: Theme.of(context).textTheme.titleSmall),
       ],
     );

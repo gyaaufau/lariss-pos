@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,6 +35,37 @@ class _CheckoutPageState extends State<CheckoutPage> {
   void dispose() {
     _paidAmountController.dispose();
     super.dispose();
+  }
+
+  void _setPaidAmount(int value) {
+    _paidAmountController.text = value.toString();
+    setState(() {});
+  }
+
+  void _appendPaidAmount(String value) {
+    final String current = _paidAmountController.text.trim();
+    final String nextValue;
+
+    if (current.isEmpty || current == '0') {
+      nextValue = value == '000' ? '0' : value;
+    } else {
+      nextValue = '$current$value';
+    }
+
+    _setPaidAmount(int.tryParse(nextValue) ?? 0);
+  }
+
+  void _removeLastPaidAmountDigit() {
+    final String current = _paidAmountController.text.trim();
+    if (current.isEmpty || current == '0') {
+      _setPaidAmount(0);
+      return;
+    }
+
+    final String nextValue = current.length == 1
+        ? '0'
+        : current.substring(0, current.length - 1);
+    _setPaidAmount(int.tryParse(nextValue) ?? 0);
   }
 
   Future<void> _submit(CartState cartState) async {
@@ -92,23 +124,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
             child: cartState.isEmpty
                 ? const _EmptyCheckoutState()
                 : ListView(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16.r),
                     children: <Widget>[
                       Text(
                         'Review belanja dan selesaikan pembayaran.',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Text(
                         'Day 9 fokus: input pembayaran, ringkasan belanja, dan layar sukses setelah invoice tersimpan.',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16.r),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(20.r),
                           border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
                         child: Column(
@@ -118,15 +150,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               'Ringkasan item',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12.h),
                             ...cartState.items.map(
                               (CartItemEntity item) => Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
+                                padding: EdgeInsets.only(bottom: 12.h),
                                 child: _CheckoutItemTile(item: item),
                               ),
                             ),
                             const Divider(),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8.h),
                             _SummaryRow(
                               label: 'Total item',
                               value: '${cartState.totalItems}',
@@ -139,12 +171,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16.r),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(20.r),
                           border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
                         child: Column(
@@ -154,17 +186,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               'Pembayaran',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12.h),
                             TextField(
                               controller: _paidAmountController,
-                              keyboardType: TextInputType.number,
+                              readOnly: true,
                               decoration: const InputDecoration(
                                 labelText: 'Nominal dibayar',
-                                hintText: 'Contoh: 50000',
+                                hintText: 'Input dari numpad',
                               ),
-                              onChanged: (_) => setState(() {}),
+                              onTapOutside: (_) =>
+                                  FocusScope.of(context).unfocus(),
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 16.h),
+                            _CheckoutNumpad(
+                              onDigitPressed: _appendPaidAmount,
+                              onBackspacePressed: _removeLastPaidAmountDigit,
+                              onClearPressed: () =>
+                                  _setPaidAmount(cartState.totalAmount),
+                            ),
+                            SizedBox(height: 12.h),
                             _SummaryRow(
                               label: 'Kembalian',
                               value: changePreview < 0
@@ -174,7 +214,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   ? const Color(0xFFB91C1C)
                                   : const Color(0xFF166534),
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16.h),
                             SizedBox(
                               width: double.infinity,
                               child: FilledButton(
@@ -200,6 +240,119 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 }
 
+class _CheckoutNumpad extends StatelessWidget {
+  const _CheckoutNumpad({
+    required this.onDigitPressed,
+    required this.onBackspacePressed,
+    required this.onClearPressed,
+  });
+
+  final ValueChanged<String> onDigitPressed;
+  final VoidCallback onBackspacePressed;
+  final VoidCallback onClearPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: 3,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      childAspectRatio: 1.95,
+      children: <Widget>[
+        for (final String digit in <String>[
+          '1',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7',
+          '8',
+          '9',
+          '000',
+          '0',
+        ])
+          _NumpadButton(label: digit, onPressed: () => onDigitPressed(digit)),
+        _NumpadButton(
+          label: 'Hapus',
+          icon: Icons.backspace_outlined,
+          onPressed: onBackspacePressed,
+        ),
+        _NumpadButton(
+          label: 'Pas',
+          icon: Icons.restart_alt_rounded,
+          onPressed: onClearPressed,
+          isPrimary: true,
+        ),
+      ],
+    );
+  }
+}
+
+class _NumpadButton extends StatelessWidget {
+  const _NumpadButton({
+    required this.label,
+    required this.onPressed,
+    this.icon,
+    this.isPrimary = false,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final IconData? icon;
+  final bool isPrimary;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    return FilledButton.tonal(
+      onPressed: onPressed,
+      style: FilledButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+        minimumSize: const Size(0, 48),
+        backgroundColor: isPrimary
+            ? colorScheme.primary
+            : colorScheme.surfaceContainerHighest,
+        foregroundColor: isPrimary
+            ? colorScheme.onPrimary
+            : colorScheme.onSurface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+      ),
+      child: icon == null
+          ? Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontSize: 18.sp),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(icon, size: 16),
+                SizedBox(width: 6.w),
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(fontSize: 13.sp),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+}
+
 class CheckoutSuccessPage extends StatelessWidget {
   const CheckoutSuccessPage({required this.transaction, super.key});
 
@@ -214,16 +367,16 @@ class CheckoutSuccessPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24.r),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(24.r),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: Column(
@@ -232,7 +385,7 @@ class CheckoutSuccessPage extends StatelessWidget {
                     Container(
                       width: 56,
                       height: 56,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Color(0xFFDCFCE7),
                         shape: BoxShape.circle,
                       ),
@@ -242,17 +395,17 @@ class CheckoutSuccessPage extends StatelessWidget {
                         size: 28,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Text(
                       'Transaksi berhasil disimpan.',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Text(
                       transaction.invoiceNumber,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     _SummaryRow(
                       label: 'Total',
                       value: formatCurrency(transaction.totalAmount),
@@ -277,7 +430,7 @@ class CheckoutSuccessPage extends StatelessWidget {
                   child: const Text('Kembali ke kasir'),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
@@ -314,7 +467,7 @@ class _CheckoutItemTile extends StatelessWidget {
                 item.productName,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4.h),
               Text(
                 '${item.quantity} x ${formatCurrency(item.price)}',
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -322,7 +475,7 @@ class _CheckoutItemTile extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12.w),
         Text(formatCurrency(item.subtotal)),
       ],
     );
@@ -351,11 +504,11 @@ class _SummaryRow extends StatelessWidget {
             ?.copyWith(color: valueColor);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: 8.h),
       child: Row(
         children: <Widget>[
           Expanded(child: Text(label)),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           Text(value, style: style),
         ],
       ),
@@ -370,7 +523,7 @@ class _EmptyCheckoutState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.r),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -379,12 +532,12 @@ class _EmptyCheckoutState extends StatelessWidget {
               size: 40,
               color: Theme.of(context).colorScheme.primary,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Text(
               'Cart masih kosong.',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Text(
               'Balik ke halaman kasir lalu tambahkan produk dulu.',
               textAlign: TextAlign.center,

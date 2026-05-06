@@ -16,6 +16,6 @@ abstract class ProfileRepository {
 
   Future<Either<Failure, AppSettingsEntity>> saveAppSettings({
     required bool lowStockAlertEnabled,
-    required bool showOutOfStockProducts,
+    required bool onboardingCompleted,
   });
 }

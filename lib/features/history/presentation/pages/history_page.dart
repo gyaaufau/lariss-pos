@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,6 +32,57 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
+  List<_HistoryGroup> _groupTransactionsByDate(
+    List<TransactionEntity> transactions,
+  ) {
+    final Map<String, List<TransactionEntity>> grouped =
+        <String, List<TransactionEntity>>{};
+    final List<String> orderedKeys = <String>[];
+
+    for (final transaction in transactions) {
+      final date = DateTime.fromMillisecondsSinceEpoch(transaction.createdAt);
+      final normalizedDate = DateTime(date.year, date.month, date.day);
+      final key =
+          '${normalizedDate.year}-${normalizedDate.month}-${normalizedDate.day}';
+
+      if (!grouped.containsKey(key)) {
+        grouped[key] = <TransactionEntity>[];
+        orderedKeys.add(key);
+      }
+
+      grouped[key]!.add(transaction);
+    }
+
+    return orderedKeys
+        .map(
+          (key) => _HistoryGroup(
+            label: _formatGroupDate(grouped[key]!.first.createdAt),
+            transactions: grouped[key]!,
+          ),
+        )
+        .toList();
+  }
+
+  String _formatGroupDate(int epochMs) {
+    const monthNames = <String>[
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+
+    final date = DateTime.fromMillisecondsSinceEpoch(epochMs);
+    return '${date.day} ${monthNames[date.month - 1]} ${date.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,10 +100,13 @@ class _HistoryPageState extends State<HistoryPage> {
           final isLoading =
               state.status == HistoryStatus.loading &&
               state.transactions.isEmpty;
+          final groupedTransactions = _groupTransactionsByDate(
+            state.transactions,
+          );
 
           return SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -59,12 +114,12 @@ class _HistoryPageState extends State<HistoryPage> {
                     'Semua invoice tersimpan lokal.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     'Day 10 fokus: list riwayat dan detail item per transaksi. Filter tanggal belum saya tambah dulu.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   Expanded(
                     child: isLoading
                         ? const Center(child: CircularProgressIndicator())
@@ -74,14 +129,42 @@ class _HistoryPageState extends State<HistoryPage> {
                             onRefresh: () =>
                                 context.read<HistoryCubit>().loadHistory(),
                             child: ListView.separated(
-                              itemCount: state.transactions.length,
+                              itemCount: groupedTransactions.length,
                               separatorBuilder: (_, _) =>
-                                  const SizedBox(height: 12),
+                                  SizedBox(height: 20.h),
                               itemBuilder: (context, index) {
-                                final transaction = state.transactions[index];
-                                return _TransactionCard(
-                                  transaction: transaction,
-                                  onTap: () => _openDetail(transaction),
+                                final group = groupedTransactions[index];
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      group.label,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(0xFF475569),
+                                          ),
+                                    ),
+                                    SizedBox(height: 12.h),
+                                    Column(
+                                      children: group.transactions
+                                          .map(
+                                            (transaction) => Padding(
+                                              padding: EdgeInsets.only(
+                                                bottom: 12.h,
+                                              ),
+                                              child: _TransactionCard(
+                                                transaction: transaction,
+                                                onTap: () =>
+                                                    _openDetail(transaction),
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
+                                    ),
+                                  ],
                                 );
                               },
                             ),
@@ -97,6 +180,13 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 }
 
+class _HistoryGroup {
+  const _HistoryGroup({required this.label, required this.transactions});
+
+  final String label;
+  final List<TransactionEntity> transactions;
+}
+
 class _TransactionCard extends StatelessWidget {
   const _TransactionCard({required this.transaction, required this.onTap});
 
@@ -107,14 +197,14 @@ class _TransactionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(20.r),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         child: Ink(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(18.r),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20.r),
             border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
           child: Column(
@@ -136,12 +226,12 @@ class _TransactionCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Text(
                 '${transaction.totalItem} item • ${formatDateTime(transaction.createdAt)}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -168,10 +258,10 @@ class _EmptyHistoryState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
@@ -182,12 +272,12 @@ class _EmptyHistoryState extends StatelessWidget {
             size: 36,
             color: Theme.of(context).colorScheme.primary,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Text(
             'Belum ada riwayat transaksi.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Begitu checkout selesai dibuat, semua invoice akan tampil di sini lengkap dengan detail item.',
             textAlign: TextAlign.center,

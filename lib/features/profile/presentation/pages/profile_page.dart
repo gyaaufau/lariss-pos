@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/widgets/app_section_tile.dart';
+import '../cubit/app_settings_cubit.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
 
@@ -29,13 +32,9 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<void> _updateSettings({
-    bool? lowStockAlertEnabled,
-    bool? showOutOfStockProducts,
-  }) async {
+  Future<void> _updateSettings({bool? lowStockAlertEnabled}) async {
     context.read<ProfileCubit>().updateSettingsDraft(
       lowStockAlertEnabled: lowStockAlertEnabled,
-      showOutOfStockProducts: showOutOfStockProducts,
     );
     await _saveSettings();
   }
@@ -46,6 +45,10 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(title: const Text('Profile')),
       body: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
+          if (state.status == ProfileStatus.success) {
+            context.read<AppSettingsCubit>().syncSettings(state.settings);
+          }
+
           if (state.errorMessage == null) {
             return;
           }
@@ -56,6 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
           context.read<ProfileCubit>().clearFeedback();
         },
         builder: (context, state) {
+          final theme = Theme.of(context);
           final isInitialLoading =
               state.status == ProfileStatus.loading && state.profile == null;
           final isSubmitting = state.status == ProfileStatus.submitting;
@@ -68,20 +72,90 @@ class _ProfilePageState extends State<ProfilePage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<ProfileCubit>().loadProfile(),
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 children: <Widget>[
-                  _SectionTile(
+                  AppSectionTile(
                     title: 'Kelola profile',
                     subtitle: 'Lihat dan ubah identitas toko.',
                     icon: Icons.store_outlined,
                     onTap: () => context.push(AppRouter.storeProfilePath),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 16.h),
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20.r),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(24.r),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          width: 52.w,
+                          height: 52.w,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFECFDF3),
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          child: const Icon(
+                            Icons.cloud_upload_outlined,
+                            color: Color(0xFF16A34A),
+                          ),
+                        ),
+                        SizedBox(width: 14.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Text(
+                                      'Backup data ke Google Drive',
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10.w,
+                                      vertical: 6.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFF7ED),
+                                      borderRadius: BorderRadius.circular(999.r),
+                                    ),
+                                    child: Text(
+                                      'Coming soon',
+                                      style: theme.textTheme.labelMedium
+                                          ?.copyWith(
+                                            color: const Color(0xFFEA580C),
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8.h),
+                              Text(
+                                'Backup database toko ke Google Drive akan hadir di update berikutnya.',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  Container(
+                    padding: EdgeInsets.all(20.r),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24.r),
                       border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
                     child: Column(
@@ -89,39 +163,33 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: <Widget>[
                         Text(
                           'Settings aplikasi',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8.h),
                         Text(
                           'Atur perilaku dasar aplikasi untuk operasional harian.',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: theme.textTheme.bodyMedium,
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
                         SwitchListTile(
                           value: state.settings.lowStockAlertEnabled,
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Aktifkan alert low stock'),
-                          subtitle: const Text(
+                          title: Text(
+                            'Aktifkan alert low stock',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
                             'Tampilkan pengingat stok menipis di home dan halaman stok.',
+                            style: theme.textTheme.bodyMedium,
                           ),
                           onChanged: isSubmitting
                               ? null
                               : (value) => _updateSettings(
                                   lowStockAlertEnabled: value,
-                                ),
-                        ),
-                        const Divider(height: 1),
-                        SwitchListTile(
-                          value: state.settings.showOutOfStockProducts,
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('Tampilkan produk stok habis'),
-                          subtitle: const Text(
-                            'Kalau mati, produk stok 0 bisa disembunyikan dari daftar tertentu.',
-                          ),
-                          onChanged: isSubmitting
-                              ? null
-                              : (value) => _updateSettings(
-                                  showOutOfStockProducts: value,
                                 ),
                         ),
                       ],
@@ -132,68 +200,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _SectionTile extends StatelessWidget {
-  const _SectionTile({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.onTap,
-  });
-
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-          ),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFDBEAFE),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(icon, color: const Color(0xFF2563EB)),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(title, style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Icon(Icons.chevron_right),
-            ],
-          ),
-        ),
       ),
     );
   }

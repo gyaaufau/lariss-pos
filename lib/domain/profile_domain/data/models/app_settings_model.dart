@@ -6,11 +6,11 @@ import '../../domain/entities/app_settings_entity.dart';
 class AppSettingsModel extends AppSettingsEntity {
   const AppSettingsModel({
     required super.lowStockAlertEnabled,
-    required super.showOutOfStockProducts,
+    required super.onboardingCompleted,
   });
 
   static const String lowStockAlertKey = 'low_stock_alert_enabled';
-  static const String showOutOfStockProductsKey = 'show_out_of_stock_products';
+  static const String onboardingCompletedKey = 'onboarding_completed';
 
   factory AppSettingsModel.fromTableDataList(List<AppSettingsTableData> rows) {
     String? findValue(String key) {
@@ -25,7 +25,7 @@ class AppSettingsModel extends AppSettingsEntity {
 
     return AppSettingsModel(
       lowStockAlertEnabled: findValue(lowStockAlertKey) != 'false',
-      showOutOfStockProducts: findValue(showOutOfStockProductsKey) != 'false',
+      onboardingCompleted: findValue(onboardingCompletedKey) == 'true',
     );
   }
 
@@ -42,9 +42,9 @@ class AppSettingsModel extends AppSettingsEntity {
         updatedAt: Value(updatedAt),
       ),
       AppSettingsTableCompanion(
-        id: const Value(showOutOfStockProductsKey),
-        key: const Value(showOutOfStockProductsKey),
-        value: Value(showOutOfStockProducts.toString()),
+        id: const Value(onboardingCompletedKey),
+        key: const Value(onboardingCompletedKey),
+        value: Value(onboardingCompleted.toString()),
         createdAt: Value(createdAt),
         updatedAt: Value(updatedAt),
       ),

@@ -2,9 +2,15 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/di/service_locator.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../domain/transaction_domain/domain/entities/transaction_entity.dart';
+import '../../../../domain/transaction_domain/domain/usecases/get_transaction_history.dart';
 import '../../../../domain/trend_domain/domain/entities/trend_breakdown_entity.dart';
 import '../../../../domain/trend_domain/domain/entities/trend_comparison_entity.dart';
 import '../../../../domain/trend_domain/domain/entities/trend_date_filter_entity.dart';
@@ -34,8 +40,38 @@ class _TrendPageState extends State<TrendPage> {
 
   @override
   Widget build(BuildContext context) {
+    final TrendDashboardEntity? dashboard = context.select(
+      (TrendCubit cubit) => cubit.state.dashboard,
+    );
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Trend penjualan')),
+      appBar: AppBar(
+        title: const Text('Trend penjualan'),
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 12.w),
+            child: TextButton.icon(
+              onPressed: dashboard == null
+                  ? null
+                  : () => context.push(
+                      AppRouter.trendExportPath,
+                      extra: dashboard,
+                    ),
+              icon: const Icon(Icons.download_rounded, size: 18),
+              label: const Text('Export'),
+              style: TextButton.styleFrom(
+                foregroundColor: colorScheme.onPrimary,
+                backgroundColor: colorScheme.primary,
+                disabledForegroundColor: const Color(0xFF94A3B8),
+                disabledBackgroundColor: const Color(0xFFF1F5F9),
+                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                shape: const StadiumBorder(),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: BlocConsumer<TrendCubit, TrendState>(
         listener: (BuildContext context, TrendState state) {
           if (state.status == TrendStatus.failure &&
@@ -54,7 +90,7 @@ class _TrendPageState extends State<TrendPage> {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0.h),
                   child: _TrendRangeTabs(
                     selectedRange: state.selectedRange,
                     selectedFilter: state.selectedFilter,
@@ -67,16 +103,17 @@ class _TrendPageState extends State<TrendPage> {
                 if (state.isRefreshing) const LinearProgressIndicator(),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16.r),
                     child: isInitialLoading
                         ? const _TrendLoadingState()
                         : dashboard == null || !dashboard.hasActivity
                         ? _EmptyTrendState(range: state.selectedRange)
                         : RefreshIndicator(
-                            onRefresh: () => context.read<TrendCubit>().loadTrend(
-                              range: state.selectedRange,
-                              forceRefresh: true,
-                            ),
+                            onRefresh: () =>
+                                context.read<TrendCubit>().loadTrend(
+                                  range: state.selectedRange,
+                                  forceRefresh: true,
+                                ),
                             child: ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
                               children: <Widget>[
@@ -93,21 +130,22 @@ class _TrendPageState extends State<TrendPage> {
                                         color: const Color(0xFF2563EB),
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
+                                    SizedBox(width: 12.w),
                                     Expanded(
                                       child: _KpiCard(
                                         title: 'Transaksi',
                                         value: formatNumber(
                                           dashboard.kpi.totalTransactions,
                                         ),
-                                        comparison:
-                                            dashboard.kpi.transactionsComparison,
+                                        comparison: dashboard
+                                            .kpi
+                                            .transactionsComparison,
                                         color: const Color(0xFF16A34A),
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 _ChartPanel(
                                   title: 'Insight cepat',
                                   subtitle: 'Ringkas performa range aktif',
@@ -122,19 +160,22 @@ class _TrendPageState extends State<TrendPage> {
                                       ),
                                       if (dashboard.insights.isNotEmpty)
                                         ...dashboard.insights.map(
-                                          (TrendInsightEntity insight) => Padding(
-                                            padding: const EdgeInsets.only(top: 12),
-                                            child: _InsightCard(
-                                              title: insight.title,
-                                              value: insight.value,
-                                              subtitle: insight.subtitle,
-                                            ),
-                                          ),
+                                          (TrendInsightEntity insight) =>
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                  top: 12,
+                                                ),
+                                                child: _InsightCard(
+                                                  title: insight.title,
+                                                  value: insight.value,
+                                                  subtitle: insight.subtitle,
+                                                ),
+                                              ),
                                         ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 _ChartPanel(
                                   title: 'Revenue trend',
                                   subtitle: _rangeDescription(
@@ -144,38 +185,72 @@ class _TrendPageState extends State<TrendPage> {
                                   child: _LineTrendChart(
                                     points: dashboard.revenueSeries,
                                     color: const Color(0xFF2563EB),
-                                    valueSelector: (TrendSeriesPointEntity point) =>
-                                        point.totalSales,
-                                    tooltipFormatter: (TrendSeriesPointEntity point) =>
-                                        '${point.label}\n${formatCurrency(point.totalSales)}',
+                                    onPointTap:
+                                        (TrendSeriesPointEntity point) =>
+                                            _openBucketTransactions(
+                                              context,
+                                              title: 'Revenue ${point.label}',
+                                              predicate:
+                                                  (TransactionEntity tx) =>
+                                                      _inPointWindow(tx, point),
+                                            ),
+                                    valueSelector:
+                                        (TrendSeriesPointEntity point) =>
+                                            point.totalSales,
+                                    tooltipFormatter:
+                                        (TrendSeriesPointEntity point) =>
+                                            '${point.label}\n${formatCurrency(point.totalSales)}',
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 _ChartPanel(
                                   title: 'Transaction trend',
                                   subtitle: 'Volume transaksi per bucket waktu',
                                   child: _LineTrendChart(
                                     points: dashboard.transactionSeries,
                                     color: const Color(0xFF16A34A),
-                                    valueSelector: (TrendSeriesPointEntity point) =>
-                                        point.totalTransactions,
-                                    tooltipFormatter: (TrendSeriesPointEntity point) =>
-                                        '${point.label}\n${point.totalTransactions} trx',
+                                    onPointTap:
+                                        (TrendSeriesPointEntity point) =>
+                                            _openBucketTransactions(
+                                              context,
+                                              title: 'Transaksi ${point.label}',
+                                              predicate:
+                                                  (TransactionEntity tx) =>
+                                                      _inPointWindow(tx, point),
+                                            ),
+                                    valueSelector:
+                                        (TrendSeriesPointEntity point) =>
+                                            point.totalTransactions,
+                                    tooltipFormatter:
+                                        (TrendSeriesPointEntity point) =>
+                                            '${point.label}\n${point.totalTransactions} trx',
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 _ChartPanel(
                                   title: 'Jam ramai',
-                                  subtitle: 'Top jam dengan transaksi tertinggi',
+                                  subtitle:
+                                      'Top jam dengan transaksi tertinggi',
                                   child: _BreakdownBarChart(
                                     items: dashboard.busyHours,
                                     color: const Color(0xFFEF4444),
-                                    metricLabelBuilder: (
-                                      TrendBreakdownEntity item,
-                                    ) => '${item.totalQuantity} trx',
+                                    onBarTap: (TrendBreakdownEntity item) =>
+                                        _openBucketTransactions(
+                                          context,
+                                          title: 'Jam ramai ${item.label}',
+                                          predicate: (TransactionEntity tx) =>
+                                              _sameHourInDashboard(
+                                                tx.createdAt,
+                                                item.label,
+                                                dashboard.transactionSeries,
+                                              ),
+                                        ),
+                                    metricLabelBuilder:
+                                        (TrendBreakdownEntity item) =>
+                                            '${item.totalQuantity} trx',
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 _ChartPanel(
                                   title: 'Top product',
                                   subtitle: 'Top 5 produk by qty',
@@ -184,7 +259,7 @@ class _TrendPageState extends State<TrendPage> {
                                     color: const Color(0xFFF59E0B),
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 _ChartPanel(
                                   title: 'Top kategori',
                                   subtitle: 'Top 5 kategori by qty',
@@ -193,18 +268,20 @@ class _TrendPageState extends State<TrendPage> {
                                     color: const Color(0xFF8B5CF6),
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 _ChartPanel(
                                   title: 'Produk turun',
-                                  subtitle: 'Produk yang melemah vs periode lalu',
+                                  subtitle:
+                                      'Produk yang melemah vs periode lalu',
                                   child: _MovementList(
                                     items: dashboard.productDrops,
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 _ChartPanel(
                                   title: 'Kategori turun',
-                                  subtitle: 'Kategori yang melemah vs periode lalu',
+                                  subtitle:
+                                      'Kategori yang melemah vs periode lalu',
                                   child: _MovementList(
                                     items: dashboard.categoryDrops,
                                   ),
@@ -222,10 +299,7 @@ class _TrendPageState extends State<TrendPage> {
     );
   }
 
-  Future<void> _pickCustomRange(
-    BuildContext context,
-    TrendState state,
-  ) async {
+  Future<void> _pickCustomRange(BuildContext context, TrendState state) async {
     final DateTime now = DateTime.now();
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
@@ -244,10 +318,57 @@ class _TrendPageState extends State<TrendPage> {
 
     context.read<TrendCubit>().loadTrend(
       range: TrendRange.custom,
-      filter: TrendDateFilterEntity(
-        start: picked.start,
-        end: picked.end,
-      ),
+      filter: TrendDateFilterEntity(start: picked.start, end: picked.end),
+    );
+  }
+
+  bool _inPointWindow(TransactionEntity tx, TrendSeriesPointEntity point) {
+    return tx.createdAt >= point.startAt && tx.createdAt < point.endAt;
+  }
+
+  bool _sameHourInDashboard(
+    int epochMs,
+    String hourLabel,
+    List<TrendSeriesPointEntity> points,
+  ) {
+    final DateTime date = DateTime.fromMillisecondsSinceEpoch(epochMs);
+    final String label = '${date.hour.toString().padLeft(2, '0')}:00';
+    if (label != hourLabel) {
+      return false;
+    }
+    if (points.isEmpty) {
+      return false;
+    }
+    return epochMs >= points.first.startAt && epochMs < points.last.endAt;
+  }
+
+  Future<void> _openBucketTransactions(
+    BuildContext context, {
+    required String title,
+    required bool Function(TransactionEntity tx) predicate,
+  }) async {
+    final result = await sl<GetTransactionHistory>()();
+    if (!context.mounted) {
+      return;
+    }
+
+    result.match(
+      (failure) => ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(failure.message))),
+      (transactions) async {
+        final List<TransactionEntity> filtered = transactions
+            .where(predicate)
+            .toList(growable: false);
+
+        await showModalBottomSheet<void>(
+          context: context,
+          isScrollControlled: true,
+          showDragHandle: true,
+          builder: (_) =>
+              _BucketTransactionSheet(title: title, transactions: filtered),
+        );
+      },
     );
   }
 }
@@ -277,16 +398,16 @@ class _TrendRangeTabs extends StatelessWidget {
             TrendRange.monthly,
             TrendRange.yearly,
           ].map((TrendRange range) {
-          final bool isSelected = range == selectedRange;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(_rangeLabel(range)),
-              selected: isSelected,
-              onSelected: (_) => onChanged(range),
-            ),
-          );
-        }),
+            final bool isSelected = range == selectedRange;
+            return Padding(
+              padding: EdgeInsets.only(right: 8.w),
+              child: ChoiceChip(
+                label: Text(_rangeLabel(range)),
+                selected: isSelected,
+                onSelected: (_) => onChanged(range),
+              ),
+            );
+          }),
           ChoiceChip(
             label: Text(
               selectedRange == TrendRange.custom && selectedFilter != null
@@ -317,18 +438,20 @@ class _KpiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool showComparison = comparison.previousValue > 0;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: color.withValues(alpha: 0.16)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -336,8 +459,10 @@ class _KpiCard extends StatelessWidget {
               fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: 10),
-          _ComparisonBadge(comparison: comparison),
+          if (showComparison) ...<Widget>[
+            SizedBox(height: 10.h),
+            _ComparisonBadge(comparison: comparison),
+          ],
         ],
       ),
     );
@@ -359,24 +484,24 @@ class _InsightCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14.r),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(18.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 6),
+          SizedBox(height: 6.h),
           Text(
             value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4.h),
           Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
@@ -411,21 +536,21 @@ class _ComparisonBadge extends StatelessWidget {
     return Row(
       children: <Widget>[
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(999.r),
           ),
           child: Text(
             label,
             style: TextStyle(
               color: color,
-              fontSize: 12,
+              fontSize: 12.sp,
               fontWeight: FontWeight.w700,
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8.w),
         Expanded(
           child: Text(
             _comparisonCaption(comparison),
@@ -452,19 +577,19 @@ class _ChartPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 4),
+          SizedBox(height: 4.h),
           Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           child,
         ],
       ),
@@ -476,19 +601,24 @@ class _LineTrendChart extends StatelessWidget {
   const _LineTrendChart({
     required this.points,
     required this.color,
+    this.onPointTap,
     required this.valueSelector,
     required this.tooltipFormatter,
   });
 
   final List<TrendSeriesPointEntity> points;
   final Color color;
+  final ValueChanged<TrendSeriesPointEntity>? onPointTap;
   final int Function(TrendSeriesPointEntity point) valueSelector;
   final String Function(TrendSeriesPointEntity point) tooltipFormatter;
 
   @override
   Widget build(BuildContext context) {
     if (points.isEmpty) {
-      return const SizedBox(height: 260, child: Center(child: Text('Belum ada data.')));
+      return SizedBox(
+        height: 260,
+        child: Center(child: Text('Belum ada data.')),
+      );
     }
 
     final double maxY = _resolveMaxY(
@@ -504,16 +634,31 @@ class _LineTrendChart extends StatelessWidget {
           minY: 0,
           maxY: maxY,
           lineTouchData: LineTouchData(
+            touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
+              if (!event.isInterestedForInteractions ||
+                  event is! FlTapUpEvent ||
+                  response?.lineBarSpots == null ||
+                  response!.lineBarSpots!.isEmpty) {
+                return;
+              }
+              final int index = response.lineBarSpots!.first.x.toInt();
+              if (index >= 0 && index < points.length) {
+                onPointTap?.call(points[index]);
+              }
+            },
             touchTooltipData: LineTouchTooltipData(
               getTooltipColor: (_) => const Color(0xFF0F172A),
               getTooltipItems: (List<LineBarSpot> spots) {
-                return spots.map((LineBarSpot spot) {
-                  final TrendSeriesPointEntity point = points[spot.x.toInt()];
-                  return LineTooltipItem(
-                    tooltipFormatter(point),
-                    const TextStyle(color: Colors.white, fontSize: 12),
-                  );
-                }).toList(growable: false);
+                return spots
+                    .map((LineBarSpot spot) {
+                      final TrendSeriesPointEntity point =
+                          points[spot.x.toInt()];
+                      return LineTooltipItem(
+                        tooltipFormatter(point),
+                        TextStyle(color: Colors.white, fontSize: 12.sp),
+                      );
+                    })
+                    .toList(growable: false);
               },
             ),
           ),
@@ -524,7 +669,9 @@ class _LineTrendChart extends StatelessWidget {
                 const FlLine(color: Color(0xFFE2E8F0), strokeWidth: 1),
           ),
           titlesData: FlTitlesData(
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             rightTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
@@ -536,7 +683,7 @@ class _LineTrendChart extends StatelessWidget {
                 getTitlesWidget: (double value, TitleMeta meta) {
                   return Text(
                     _compactAxisLabel(value.toInt()),
-                    style: const TextStyle(fontSize: 10),
+                    style: TextStyle(fontSize: 10.sp),
                   );
                 },
               ),
@@ -552,10 +699,10 @@ class _LineTrendChart extends StatelessWidget {
                     return const SizedBox.shrink();
                   }
                   return Padding(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: EdgeInsets.only(top: 8.h),
                     child: Text(
                       points[index].shortLabel,
-                      style: const TextStyle(fontSize: 10),
+                      style: TextStyle(fontSize: 10.sp),
                     ),
                   );
                 },
@@ -591,17 +738,22 @@ class _BreakdownBarChart extends StatelessWidget {
   const _BreakdownBarChart({
     required this.items,
     required this.color,
+    this.onBarTap,
     this.metricLabelBuilder,
   });
 
   final List<TrendBreakdownEntity> items;
   final Color color;
+  final ValueChanged<TrendBreakdownEntity>? onBarTap;
   final String Function(TrendBreakdownEntity item)? metricLabelBuilder;
 
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return const SizedBox(height: 260, child: Center(child: Text('Belum ada data.')));
+      return SizedBox(
+        height: 260,
+        child: Center(child: Text('Belum ada data.')),
+      );
     }
 
     final double maxY = _resolveMaxY(
@@ -615,20 +767,32 @@ class _BreakdownBarChart extends StatelessWidget {
           minY: 0,
           maxY: maxY,
           barTouchData: BarTouchData(
+            touchCallback: (FlTouchEvent event, BarTouchResponse? response) {
+              if (!event.isInterestedForInteractions ||
+                  event is! FlTapUpEvent ||
+                  response?.spot == null) {
+                return;
+              }
+              final int index = response!.spot!.touchedBarGroupIndex;
+              if (index >= 0 && index < items.length) {
+                onBarTap?.call(items[index]);
+              }
+            },
             touchTooltipData: BarTouchTooltipData(
               getTooltipColor: (_) => const Color(0xFF0F172A),
-              getTooltipItem: (
-                BarChartGroupData group,
-                int groupIndex,
-                BarChartRodData rod,
-                int rodIndex,
-              ) {
-                final TrendBreakdownEntity item = items[group.x.toInt()];
-                return BarTooltipItem(
-                  '${item.label}\n${metricLabelBuilder?.call(item) ?? '${item.totalQuantity} item'}\n${formatCurrency(item.totalSales)}',
-                  const TextStyle(color: Colors.white, fontSize: 12),
-                );
-              },
+              getTooltipItem:
+                  (
+                    BarChartGroupData group,
+                    int groupIndex,
+                    BarChartRodData rod,
+                    int rodIndex,
+                  ) {
+                    final TrendBreakdownEntity item = items[group.x.toInt()];
+                    return BarTooltipItem(
+                      '${item.label}\n${metricLabelBuilder?.call(item) ?? '${item.totalQuantity} item'}\n${formatCurrency(item.totalSales)}',
+                      TextStyle(color: Colors.white, fontSize: 12.sp),
+                    );
+                  },
             ),
           ),
           gridData: FlGridData(
@@ -639,7 +803,9 @@ class _BreakdownBarChart extends StatelessWidget {
           ),
           borderData: FlBorderData(show: false),
           titlesData: FlTitlesData(
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             rightTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
@@ -650,7 +816,7 @@ class _BreakdownBarChart extends StatelessWidget {
                 interval: maxY / 4,
                 getTitlesWidget: (double value, TitleMeta meta) => Text(
                   value.toInt().toString(),
-                  style: const TextStyle(fontSize: 10),
+                  style: TextStyle(fontSize: 10.sp),
                 ),
               ),
             ),
@@ -664,18 +830,20 @@ class _BreakdownBarChart extends StatelessWidget {
                     return const SizedBox.shrink();
                   }
                   return Padding(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: EdgeInsets.only(top: 8.h),
                     child: Text(
                       _trimLabel(items[index].label),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 10),
+                      style: TextStyle(fontSize: 10.sp),
                     ),
                   );
                 },
               ),
             ),
           ),
-          barGroups: List<BarChartGroupData>.generate(items.length, (int index) {
+          barGroups: List<BarChartGroupData>.generate(items.length, (
+            int index,
+          ) {
             return BarChartGroupData(
               x: index,
               barRods: <BarChartRodData>[
@@ -683,8 +851,8 @@ class _BreakdownBarChart extends StatelessWidget {
                   toY: items[index].totalQuantity.toDouble(),
                   color: color,
                   width: 20,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(6),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(6.r),
                   ),
                 ),
               ],
@@ -702,11 +870,11 @@ class _TrendLoadingState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: const <Widget>[
+      children: <Widget>[
         _LoadingBlock(height: 96),
-        SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _LoadingBlock(height: 320),
-        SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _LoadingBlock(height: 320),
       ],
     );
@@ -721,55 +889,140 @@ class _MovementList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return const SizedBox(
+      return SizedBox(
         height: 120,
         child: Center(child: Text('Belum ada penurunan di range ini.')),
       );
     }
 
     return Column(
-      children: items.map((TrendMovementEntity item) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF2F2),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFFFECACA)),
-            ),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        item.label,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${item.previousQuantity} -> ${item.currentQuantity} item',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
+      children: items
+          .map((TrendMovementEntity item) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: 12.h),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(14.r),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF2F2),
+                  borderRadius: BorderRadius.circular(18.r),
+                  border: Border.all(color: const Color(0xFFFECACA)),
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  item.quantityDelta.toString(),
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: const Color(0xFFDC2626),
-                    fontWeight: FontWeight.w800,
-                  ),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            item.label,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            '${item.previousQuantity} -> ${item.currentQuantity} item',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Text(
+                      item.quantityDelta.toString(),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: const Color(0xFFDC2626),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            );
+          })
+          .toList(growable: false),
+    );
+  }
+}
+
+class _BucketTransactionSheet extends StatelessWidget {
+  const _BucketTransactionSheet({
+    required this.title,
+    required this.transactions,
+  });
+
+  final String title;
+  final List<TransactionEntity> transactions;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            SizedBox(height: 6.h),
+            Text(
+              '${transactions.length} transaksi',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-          ),
-        );
-      }).toList(growable: false),
+            SizedBox(height: 16.h),
+            if (transactions.isEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 24.h),
+                child: Center(
+                  child: Text('Belum ada transaksi di bucket ini.'),
+                ),
+              )
+            else
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: transactions.length,
+                  separatorBuilder: (_, _) => SizedBox(height: 10.h),
+                  itemBuilder: (_, int index) {
+                    final TransactionEntity tx = transactions[index];
+                    return Container(
+                      padding: EdgeInsets.all(14.r),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18.r),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  tx.invoiceNumber,
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  formatDateTime(tx.createdAt),
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Text(
+                            formatCurrency(tx.totalAmount),
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -785,7 +1038,7 @@ class _LoadingBlock extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: const Color(0xFFE2E8F0),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
       ),
     );
   }
@@ -800,10 +1053,10 @@ class _EmptyTrendState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
@@ -814,12 +1067,12 @@ class _EmptyTrendState extends StatelessWidget {
             size: 36,
             color: Theme.of(context).colorScheme.primary,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Text(
             'Belum ada data ${_rangeLabel(range).toLowerCase()}.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Tambah transaksi dulu biar grafik muncul.',
             style: Theme.of(context).textTheme.bodyMedium,
@@ -882,10 +1135,7 @@ String _rangeLabel(TrendRange range) {
   }
 }
 
-String _rangeDescription(
-  TrendRange range, {
-  TrendDateFilterEntity? filter,
-}) {
+String _rangeDescription(TrendRange range, {TrendDateFilterEntity? filter}) {
   switch (range) {
     case TrendRange.daily:
       return 'Penjualan per jam hari ini';
@@ -908,9 +1158,6 @@ String _filterLabel(TrendDateFilterEntity filter) {
 }
 
 String _comparisonCaption(TrendComparisonEntity comparison) {
-  if (comparison.previousValue == 0 && comparison.currentValue > 0) {
-    return 'Belum ada pembanding periode lalu';
-  }
   if (comparison.changePercent == 0) {
     return 'Sama dengan periode lalu';
   }

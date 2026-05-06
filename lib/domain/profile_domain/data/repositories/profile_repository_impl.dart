@@ -34,12 +34,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, AppSettingsEntity>> saveAppSettings({
     required bool lowStockAlertEnabled,
-    required bool showOutOfStockProducts,
+    required bool onboardingCompleted,
   }) async {
     try {
       final settings = await _localDatasource.saveAppSettings(
         lowStockAlertEnabled: lowStockAlertEnabled,
-        showOutOfStockProducts: showOutOfStockProducts,
+        onboardingCompleted: onboardingCompleted,
       );
       return right(settings);
     } catch (_) {

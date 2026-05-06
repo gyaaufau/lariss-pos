@@ -17,7 +17,7 @@ class ProfileLocalDatasourceImpl implements ProfileLocalDatasource {
     if (rows.isEmpty) {
       return const AppSettingsModel(
         lowStockAlertEnabled: true,
-        showOutOfStockProducts: true,
+        onboardingCompleted: false,
       );
     }
 
@@ -44,7 +44,7 @@ class ProfileLocalDatasourceImpl implements ProfileLocalDatasource {
   @override
   Future<AppSettingsModel> saveAppSettings({
     required bool lowStockAlertEnabled,
-    required bool showOutOfStockProducts,
+    required bool onboardingCompleted,
   }) async {
     final List existingRows = await _profileDao.getSettings();
     final int now = DateTime.now().millisecondsSinceEpoch;
@@ -53,7 +53,7 @@ class ProfileLocalDatasourceImpl implements ProfileLocalDatasource {
         : existingRows.first.createdAt as int;
     final AppSettingsModel model = AppSettingsModel(
       lowStockAlertEnabled: lowStockAlertEnabled,
-      showOutOfStockProducts: showOutOfStockProducts,
+      onboardingCompleted: onboardingCompleted,
     );
 
     for (final entry in model.toCompanions(

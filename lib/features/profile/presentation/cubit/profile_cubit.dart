@@ -67,13 +67,13 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   void updateSettingsDraft({
     bool? lowStockAlertEnabled,
-    bool? showOutOfStockProducts,
+    bool? onboardingCompleted,
   }) {
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
           lowStockAlertEnabled: lowStockAlertEnabled,
-          showOutOfStockProducts: showOutOfStockProducts,
+          onboardingCompleted: onboardingCompleted,
         ),
         clearErrorMessage: true,
         clearSuccessMessage: true,
@@ -134,7 +134,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     final settingsResult = await _saveAppSettings(
       lowStockAlertEnabled: state.settings.lowStockAlertEnabled,
-      showOutOfStockProducts: state.settings.showOutOfStockProducts,
+      onboardingCompleted: state.settings.onboardingCompleted,
     );
 
     return settingsResult.match(

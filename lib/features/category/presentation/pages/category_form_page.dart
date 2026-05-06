@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -76,13 +77,13 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
 
           return SafeArea(
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               children: <Widget>[
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20.r),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
                   child: Column(
@@ -94,7 +95,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
                             : 'Buat kategori baru',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       TextField(
                         controller: _nameController,
                         textInputAction: TextInputAction.done,
@@ -107,7 +108,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(

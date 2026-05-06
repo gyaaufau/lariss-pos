@@ -1,20 +1,19 @@
 class AppSettingsEntity {
   const AppSettingsEntity({
     required this.lowStockAlertEnabled,
-    required this.showOutOfStockProducts,
+    required this.onboardingCompleted,
   });
 
   final bool lowStockAlertEnabled;
-  final bool showOutOfStockProducts;
+  final bool onboardingCompleted;
 
   AppSettingsEntity copyWith({
     bool? lowStockAlertEnabled,
-    bool? showOutOfStockProducts,
+    bool? onboardingCompleted,
   }) {
     return AppSettingsEntity(
       lowStockAlertEnabled: lowStockAlertEnabled ?? this.lowStockAlertEnabled,
-      showOutOfStockProducts:
-          showOutOfStockProducts ?? this.showOutOfStockProducts,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
     );
   }
 }

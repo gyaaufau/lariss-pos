@@ -17,6 +17,9 @@ import '../../features/history/presentation/pages/history_page.dart';
 import '../../features/history/presentation/pages/transaction_detail_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/manage/presentation/pages/manage_page.dart';
+import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/onboarding/presentation/pages/splash_page.dart';
+import '../../features/profile/presentation/cubit/app_settings_cubit.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/profile/presentation/pages/edit_store_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
@@ -34,13 +37,18 @@ import '../../features/stock/presentation/pages/stock_detail_page.dart';
 import '../../features/stock/presentation/pages/stock_page.dart';
 import '../../features/stock/presentation/pages/stock_update_page.dart';
 import '../../features/trend/presentation/cubit/trend_cubit.dart';
+import '../../features/trend/presentation/pages/trend_export_page.dart';
 import '../../features/trend/presentation/pages/trend_page.dart';
+import '../../domain/trend_domain/domain/entities/trend_dashboard_entity.dart';
 import '../di/service_locator.dart';
 
 class AppRouter {
+  static const String splashPath = '/';
+  static const String onboardingPath = '/onboarding';
   static const String homePath = '/home';
   static const String historyPath = '/history';
   static const String trendPath = '/trend';
+  static const String trendExportPath = '/trend/export';
   static const String managePath = '/manage';
   static const String profilePath = '/profile';
   static const String storeProfilePath = '/profile/store';
@@ -68,14 +76,25 @@ class AppRouter {
   static String stockUpdatePath(String id) => '/profile/stock/$id/update';
 
   late final GoRouter router = GoRouter(
-    initialLocation: homePath,
+    initialLocation: splashPath,
     routes: <RouteBase>[
+      GoRoute(
+        path: splashPath,
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: onboardingPath,
+        builder: (context, state) => const OnboardingPage(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => MultiBlocProvider(
           providers: [
             BlocProvider<ProductCubit>(create: (_) => sl<ProductCubit>()),
             BlocProvider<CartCubit>(create: (_) => sl<CartCubit>()),
             BlocProvider<CheckoutCubit>(create: (_) => sl<CheckoutCubit>()),
+            BlocProvider<AppSettingsCubit>(
+              create: (_) => sl<AppSettingsCubit>()..loadSettings(),
+            ),
           ],
           child: AppShellPage(navigationShell: navigationShell),
         ),
@@ -140,6 +159,14 @@ class AppRouter {
                   create: (_) => sl<TrendCubit>(),
                   child: const TrendPage(),
                 ),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'export',
+                    builder: (context, state) => TrendExportPage(
+                      dashboard: state.extra as TrendDashboardEntity?,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

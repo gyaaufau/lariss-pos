@@ -151,6 +151,8 @@ class TrendDashboardAggregator {
           (_Bucket bucket) => TrendSeriesPointModel(
             label: bucket.label,
             shortLabel: bucket.shortLabel,
+            startAt: bucket.start.millisecondsSinceEpoch,
+            endAt: bucket.end.millisecondsSinceEpoch,
             totalSales: bucket.totalSales,
             totalTransactions: bucket.totalTransactions,
           ),
@@ -162,6 +164,8 @@ class TrendDashboardAggregator {
           (_Bucket bucket) => TrendSeriesPointModel(
             label: bucket.label,
             shortLabel: bucket.shortLabel,
+            startAt: bucket.start.millisecondsSinceEpoch,
+            endAt: bucket.end.millisecondsSinceEpoch,
             totalSales: bucket.totalSales,
             totalTransactions: bucket.totalTransactions,
           ),

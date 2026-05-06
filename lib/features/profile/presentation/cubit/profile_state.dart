@@ -9,7 +9,7 @@ class ProfileState {
     this.profile,
     this.settings = const AppSettingsEntity(
       lowStockAlertEnabled: true,
-      showOutOfStockProducts: true,
+      onboardingCompleted: false,
     ),
     this.errorMessage,
     this.successMessage,

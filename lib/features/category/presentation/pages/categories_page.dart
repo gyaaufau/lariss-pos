@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -65,21 +66,21 @@ class _CategoriesPageState extends State<CategoriesPage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<CategoryCubit>().loadCategories(),
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 children: <Widget>[
                   Text(
                     'Kelola kategori produk.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     'Pisah list, detail, dan form supaya flow lebih rapi untuk app mobile.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   if (isLoading)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 48),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 48.h),
                       child: Center(child: CircularProgressIndicator()),
                     )
                   else if (state.categories.isEmpty)
@@ -87,7 +88,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   else
                     ...state.categories.map(
                       (category) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding: EdgeInsets.only(bottom: 12.h),
                         child: _CategoryCard(
                           name: category.name,
                           onTap: () => _openDetailPage(category.id),
@@ -114,14 +115,14 @@ class _CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16.r),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.r),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
           child: Row(
@@ -129,12 +130,12 @@ class _CategoryCard extends StatelessWidget {
               Container(
                 width: 12,
                 height: 12,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Color(0xFF2563EB),
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               Expanded(
                 child: Text(
                   name,
@@ -157,10 +158,10 @@ class _EmptyCategoryState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
@@ -169,7 +170,7 @@ class _EmptyCategoryState extends StatelessWidget {
             'Belum ada kategori.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Tambah kategori pertama dari tombol di kanan bawah.',
             textAlign: TextAlign.center,

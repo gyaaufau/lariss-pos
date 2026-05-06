@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -121,15 +122,15 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
           return SafeArea(
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               children: <Widget>[
                 if (!hasCategories)
                   Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(20),
+                    margin: EdgeInsets.only(bottom: 16.h),
+                    padding: EdgeInsets.all(20.r),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                       border: Border.all(color: const Color(0xFFFCD34D)),
                     ),
                     child: const Text(
@@ -137,10 +138,10 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     ),
                   ),
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20.r),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
                   child: Column(
@@ -152,7 +153,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                             : 'Buat produk baru',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       if (hasCategories)
                         DropdownButtonFormField<String>(
                           initialValue: _selectedCategoryId,
@@ -173,14 +174,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
                             labelText: 'Kategori',
                           ),
                         ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       TextField(
                         controller: _nameController,
                         decoration: const InputDecoration(
                           labelText: 'Nama produk',
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       TextField(
                         controller: _priceController,
                         keyboardType: TextInputType.number,
@@ -188,7 +189,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                           labelText: 'Harga jual',
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       TextField(
                         controller: _stockController,
                         keyboardType: TextInputType.number,
@@ -196,7 +197,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                           labelText: 'Stok awal',
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       TextField(
                         controller: _minimumStockController,
                         keyboardType: TextInputType.number,
@@ -204,7 +205,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                           labelText: 'Minimum stok',
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       SwitchListTile(
                         value: _isActive,
                         contentPadding: EdgeInsets.zero,
@@ -221,7 +222,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(

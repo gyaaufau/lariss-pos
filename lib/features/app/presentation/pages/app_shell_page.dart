@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 class AppShellPage extends StatelessWidget {
@@ -18,7 +19,7 @@ class AppShellPage extends StatelessWidget {
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
-        height: 68,
+        height: 68.h,
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: _onTap,
         destinations: const <NavigationDestination>[

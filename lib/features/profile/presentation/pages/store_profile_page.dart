@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -62,7 +63,7 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<ProfileCubit>().loadProfile(),
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 children: <Widget>[
                   _StoreProfileCard(
                     profile: state.profile,
@@ -87,26 +88,26 @@ class _StoreProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Profil toko', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Lihat identitas toko di sini. Ubah data lewat halaman terpisah.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           _InfoRow(label: 'Nama toko', value: profile?.storeName ?? '-'),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           _InfoRow(label: 'Nama owner', value: profile?.ownerName ?? '-'),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -138,7 +139,7 @@ class _InfoRow extends StatelessWidget {
             context,
           ).textTheme.labelMedium?.copyWith(color: const Color(0xFF64748B)),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4.h),
         Text(value, style: Theme.of(context).textTheme.titleMedium),
       ],
     );

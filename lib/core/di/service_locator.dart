@@ -59,6 +59,7 @@ import '../../features/category/presentation/cubit/category_cubit.dart';
 import '../../features/category/presentation/cubit/category_detail_cubit.dart';
 import '../../features/category/presentation/cubit/category_form_cubit.dart';
 import '../../features/history/presentation/cubit/history_cubit.dart';
+import '../../features/profile/presentation/cubit/app_settings_cubit.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/product/presentation/cubit/product_detail_cubit.dart';
 import '../../features/product/presentation/cubit/product_form_cubit.dart';
@@ -307,6 +308,12 @@ Future<void> setupServiceLocator() async {
         getAppSettings: sl<GetAppSettings>(),
         saveAppSettings: sl<SaveAppSettings>(),
       ),
+    );
+  }
+
+  if (!sl.isRegistered<AppSettingsCubit>()) {
+    sl.registerFactory<AppSettingsCubit>(
+      () => AppSettingsCubit(getAppSettings: sl<GetAppSettings>()),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -90,13 +91,13 @@ class _EditStoreProfilePageState extends State<EditStoreProfilePage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<ProfileCubit>().loadProfile(),
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 children: <Widget>[
                   _StoreProfileFormCard(
                     storeNameController: _storeNameController,
                     ownerNameController: _ownerNameController,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
@@ -128,22 +129,22 @@ class _StoreProfileFormCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Profil toko', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Ubah identitas toko untuk dipakai di home, transaksi, dan ringkasan app.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           TextField(
             controller: storeNameController,
             textInputAction: TextInputAction.next,
@@ -152,7 +153,7 @@ class _StoreProfileFormCard extends StatelessWidget {
               hintText: 'Contoh: KasirLite',
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           TextField(
             controller: ownerNameController,
             textInputAction: TextInputAction.done,

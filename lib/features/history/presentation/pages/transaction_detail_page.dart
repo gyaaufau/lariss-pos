@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/formatters.dart';
@@ -77,11 +78,11 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
               onRefresh: _loadDetail,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.r),
                 children: <Widget>[
                   if (isLoading) ...<Widget>[
                     const LinearProgressIndicator(),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                   ],
                   _SectionCard(
                     child: Column(
@@ -91,12 +92,12 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                           transaction.invoiceNumber,
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8.h),
                         Text(
                           formatDateTime(transaction.createdAt),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         Row(
                           children: <Widget>[
                             Expanded(
@@ -105,7 +106,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                                 value: '${transaction.totalItem}',
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.w),
                             Expanded(
                               child: _HighlightMetric(
                                 label: 'Total',
@@ -118,18 +119,18 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   Text(
                     'Item belanja',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   if (transaction.items.isEmpty)
                     const _EmptyItemsCard()
                   else
                     ...transaction.items.map(
                       (TransactionItemEntity item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding: EdgeInsets.only(bottom: 12.h),
                         child: _SectionCard(
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +145,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                                         context,
                                       ).textTheme.titleSmall,
                                     ),
-                                    const SizedBox(height: 6),
+                                    SizedBox(height: 6.h),
                                     Text(
                                       '${item.quantity} x ${formatCurrency(item.productPrice)}',
                                       style: Theme.of(
@@ -154,7 +155,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12.w),
                               Text(
                                 formatCurrency(item.subtotal),
                                 style: Theme.of(context).textTheme.titleSmall,
@@ -164,12 +165,12 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     'Ringkasan pembayaran',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   _SectionCard(
                     child: Column(
                       children: <Widget>[
@@ -177,12 +178,12 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                           label: 'Total transaksi',
                           value: formatCurrency(transaction.totalAmount),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
                         _InfoRow(
                           label: 'Nominal dibayar',
                           value: formatCurrency(transaction.paidAmount),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
                         _InfoRow(
                           label: 'Kembalian',
                           value: formatCurrency(transaction.changeAmount),
@@ -209,10 +210,10 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: child,
@@ -234,16 +235,16 @@ class _HighlightMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 6),
+          SizedBox(height: 6.h),
           Text(
             value,
             style: Theme.of(
@@ -268,7 +269,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(label)),
-        const SizedBox(width: 16),
+        SizedBox(width: 16.w),
         Text(
           value,
           style: Theme.of(

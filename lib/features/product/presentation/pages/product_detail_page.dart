@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/app_status_chip.dart';
 import '../cubit/product_detail_cubit.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -103,7 +105,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
           return SafeArea(
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               children: <Widget>[
                 _SectionCard(
                   child: Column(
@@ -113,7 +115,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         product.name,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -122,26 +124,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             label: _categoryName(state, product.categoryId),
                             color: const Color(0xFFDBEAFE),
                           ),
-                          _Tag(
-                            label: product.isActive ? 'Aktif' : 'Nonaktif',
-                            color: product.isActive
-                                ? const Color(0xFFDCFCE7)
-                                : const Color(0xFFE2E8F0),
-                          ),
-                          _Tag(
-                            label: product.isLowStock
-                                ? 'Low stock'
-                                : 'Stok aman',
-                            color: product.isLowStock
-                                ? const Color(0xFFFFEDD5)
-                                : const Color(0xFFDCFCE7),
-                          ),
+                          product.isActive
+                              ? AppStatusChip.active()
+                              : AppStatusChip.inactive(),
+                          product.isOutOfStock
+                              ? AppStatusChip.outOfStock()
+                              : product.isLowStock
+                              ? AppStatusChip.lowStock()
+                              : AppStatusChip.safe(),
                         ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 _SectionCard(
                   child: Column(
                     children: <Widget>[
@@ -149,22 +145,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         label: 'Harga jual',
                         value: formatCurrency(product.sellingPrice),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       _InfoRow(
                         label: 'Stok sekarang',
                         value: '${product.currentStock}',
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       _InfoRow(
                         label: 'Minimum stok',
                         value: '${product.minimumStock}',
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       _InfoRow(
                         label: 'Dibuat',
                         value: formatDateTime(product.createdAt),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       _InfoRow(
                         label: 'Diubah',
                         value: formatDateTime(product.updatedAt),
@@ -172,7 +168,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -181,7 +177,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     label: const Text('Edit produk'),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12.h),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -207,10 +203,10 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: child,
@@ -229,7 +225,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(label)),
-        const SizedBox(width: 16),
+        SizedBox(width: 16.w),
         Text(value, style: Theme.of(context).textTheme.titleSmall),
       ],
     );
@@ -245,10 +241,10 @@ class _Tag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(999.r),
       ),
       child: Text(label),
     );

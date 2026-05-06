@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,6 +47,57 @@ class _StockDetailPageState extends State<StockDetailPage> {
     }
   }
 
+  List<_MovementGroup> _groupMovementsByDate(
+    List<StockMovementEntity> movements,
+  ) {
+    final Map<String, List<StockMovementEntity>> grouped =
+        <String, List<StockMovementEntity>>{};
+    final List<String> orderedKeys = <String>[];
+
+    for (final movement in movements) {
+      final date = DateTime.fromMillisecondsSinceEpoch(movement.createdAt);
+      final normalizedDate = DateTime(date.year, date.month, date.day);
+      final key =
+          '${normalizedDate.year}-${normalizedDate.month}-${normalizedDate.day}';
+
+      if (!grouped.containsKey(key)) {
+        grouped[key] = <StockMovementEntity>[];
+        orderedKeys.add(key);
+      }
+
+      grouped[key]!.add(movement);
+    }
+
+    return orderedKeys
+        .map(
+          (key) => _MovementGroup(
+            label: _formatGroupDate(grouped[key]!.first.createdAt),
+            movements: grouped[key]!,
+          ),
+        )
+        .toList();
+  }
+
+  String _formatGroupDate(int epochMs) {
+    const monthNames = <String>[
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+
+    final date = DateTime.fromMillisecondsSinceEpoch(epochMs);
+    return '${date.day} ${monthNames[date.month - 1]} ${date.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,13 +117,14 @@ class _StockDetailPageState extends State<StockDetailPage> {
           }
 
           final product = state.product;
+          final groupedMovements = _groupMovementsByDate(state.movements);
           if (product == null) {
             return const Center(child: Text('Produk stok tidak ditemukan.'));
           }
 
           return SafeArea(
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               children: <Widget>[
                 _Card(
                   child: Column(
@@ -81,17 +134,17 @@ class _StockDetailPageState extends State<StockDetailPage> {
                         product.name,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       _InfoRow(
                         label: 'Stok sekarang',
                         value: '${product.currentStock}',
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       _InfoRow(
                         label: 'Minimum stok',
                         value: '${product.minimumStock}',
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       _InfoRow(
                         label: 'Harga jual',
                         value: formatCurrency(product.sellingPrice),
@@ -99,7 +152,7 @@ class _StockDetailPageState extends State<StockDetailPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -108,48 +161,69 @@ class _StockDetailPageState extends State<StockDetailPage> {
                     label: const Text('Update stok'),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 Text(
                   'Riwayat perubahan',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12.h),
                 if (state.movements.isEmpty)
                   const _EmptyMovementState()
                 else
-                  ...state.movements.map(
-                    (movement) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _Card(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              _movementLabel(movement),
-                              style: Theme.of(context).textTheme.titleMedium,
+                  ...groupedMovements.map(
+                    (group) => Padding(
+                      padding: EdgeInsets.only(bottom: 20.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            group.label,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF475569),
+                                ),
+                          ),
+                          SizedBox(height: 12.h),
+                          ...group.movements.map(
+                            (movement) => Padding(
+                              padding: EdgeInsets.only(bottom: 12.h),
+                              child: _Card(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      _movementLabel(movement),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium,
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    _InfoRow(
+                                      label: 'Jumlah',
+                                      value: '${movement.quantity}',
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    _InfoRow(
+                                      label: 'Sebelum',
+                                      value: '${movement.stockBefore}',
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    _InfoRow(
+                                      label: 'Sesudah',
+                                      value: '${movement.stockAfter}',
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    _InfoRow(
+                                      label: 'Waktu',
+                                      value: formatDateTime(movement.createdAt),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            _InfoRow(
-                              label: 'Jumlah',
-                              value: '${movement.quantity}',
-                            ),
-                            const SizedBox(height: 8),
-                            _InfoRow(
-                              label: 'Sebelum',
-                              value: '${movement.stockBefore}',
-                            ),
-                            const SizedBox(height: 8),
-                            _InfoRow(
-                              label: 'Sesudah',
-                              value: '${movement.stockAfter}',
-                            ),
-                            const SizedBox(height: 8),
-                            _InfoRow(
-                              label: 'Waktu',
-                              value: formatDateTime(movement.createdAt),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -162,6 +236,13 @@ class _StockDetailPageState extends State<StockDetailPage> {
   }
 }
 
+class _MovementGroup {
+  const _MovementGroup({required this.label, required this.movements});
+
+  final String label;
+  final List<StockMovementEntity> movements;
+}
+
 class _Card extends StatelessWidget {
   const _Card({required this.child});
 
@@ -170,10 +251,10 @@ class _Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: child,
@@ -192,7 +273,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(label)),
-        const SizedBox(width: 16),
+        SizedBox(width: 16.w),
         Text(value, style: Theme.of(context).textTheme.titleSmall),
       ],
     );
@@ -205,10 +286,10 @@ class _EmptyMovementState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Text(

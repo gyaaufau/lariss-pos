@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -82,13 +83,13 @@ class _StockUpdatePageState extends State<StockUpdatePage> {
 
           return SafeArea(
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               children: <Widget>[
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20.r),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
                   child: Column(
@@ -98,9 +99,9 @@ class _StockUpdatePageState extends State<StockUpdatePage> {
                         product.name,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Text('Stok sekarang: ${product.currentStock}'),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       DropdownButtonFormField<StockUpdateType>(
                         initialValue: _selectedType,
                         items: StockUpdateType.values
@@ -123,7 +124,7 @@ class _StockUpdatePageState extends State<StockUpdatePage> {
                           labelText: 'Tipe perubahan',
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       TextField(
                         controller: _quantityController,
                         keyboardType: TextInputType.number,
@@ -135,7 +136,7 @@ class _StockUpdatePageState extends State<StockUpdatePage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(

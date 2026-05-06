@@ -130,11 +130,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         'Review belanja dan selesaikan pembayaran.',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Day 9 fokus: input pembayaran, ringkasan belanja, dan layar sukses setelah invoice tersimpan.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
                       SizedBox(height: 20.h),
                       Container(
                         padding: EdgeInsets.all(16.r),

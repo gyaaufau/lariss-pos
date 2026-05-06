@@ -114,11 +114,6 @@ class _HistoryPageState extends State<HistoryPage> {
                     'Semua invoice tersimpan lokal.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Day 10 fokus: list riwayat dan detail item per transaksi. Filter tanggal belum saya tambah dulu.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
                   SizedBox(height: 20.h),
                   Expanded(
                     child: isLoading

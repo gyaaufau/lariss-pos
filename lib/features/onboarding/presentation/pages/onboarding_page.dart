@@ -105,19 +105,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
               const _FeatureTile(
                 icon: Icons.inventory_2_outlined,
                 title: 'Produk terstruktur',
-                subtitle: 'Lihat daftar item aktif lebih cepat.',
               ),
               SizedBox(height: 12.h),
               const _FeatureTile(
                 icon: Icons.auto_graph_rounded,
                 title: 'Stok lebih aman',
-                subtitle: 'Tahu item menipis sebelum kehabisan.',
               ),
               SizedBox(height: 12.h),
               const _FeatureTile(
                 icon: Icons.point_of_sale_rounded,
                 title: 'Transaksi lebih ringkas',
-                subtitle: 'Tambah ke cart lalu checkout tanpa ribet.',
               ),
               const Spacer(),
               SizedBox(
@@ -139,15 +136,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
 }
 
 class _FeatureTile extends StatelessWidget {
-  const _FeatureTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
+  const _FeatureTile({required this.icon, required this.title});
 
   final IconData icon;
   final String title;
-  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -180,8 +172,6 @@ class _FeatureTile extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 4.h),
-                Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
           ),

@@ -4,15 +4,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AppSectionTile extends StatelessWidget {
   const AppSectionTile({
     required this.title,
-    required this.subtitle,
     required this.icon,
+    this.subtitle,
     this.isLoading = false,
     this.onTap,
     super.key,
   });
 
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final IconData icon;
   final bool isLoading;
   final VoidCallback? onTap;
@@ -56,11 +56,10 @@ class AppSectionTile extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodyMedium,
-                    ),
+                    if (subtitle != null) ...<Widget>[
+                      SizedBox(height: 4.h),
+                      Text(subtitle!, style: theme.textTheme.bodyMedium),
+                    ],
                   ],
                 ),
               ),

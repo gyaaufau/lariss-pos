@@ -76,7 +76,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: <Widget>[
                   AppSectionTile(
                     title: 'Kelola profile',
-                    subtitle: 'Lihat dan ubah identitas toko.',
                     icon: Icons.store_outlined,
                     onTap: () => context.push(AppRouter.storeProfilePath),
                   ),
@@ -126,7 +125,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFFFF7ED),
-                                      borderRadius: BorderRadius.circular(999.r),
+                                      borderRadius: BorderRadius.circular(
+                                        999.r,
+                                      ),
                                     ),
                                     child: Text(
                                       'Coming soon',
@@ -181,10 +182,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
-                          ),
-                          subtitle: Text(
-                            'Tampilkan pengingat stok menipis di home dan halaman stok.',
-                            style: theme.textTheme.bodyMedium,
                           ),
                           onChanged: isSubmitting
                               ? null

@@ -18,21 +18,18 @@ class ManagePage extends StatelessWidget {
           children: <Widget>[
             AppSectionTile(
               title: 'Kelola produk',
-              subtitle: 'CRUD produk, status aktif, dan stok minimum.',
               icon: Icons.inventory_outlined,
               onTap: () => context.push(AppRouter.productsPath),
             ),
             SizedBox(height: 12.h),
             AppSectionTile(
               title: 'Kelola kategori',
-              subtitle: 'CRUD kategori produk.',
               icon: Icons.category_outlined,
               onTap: () => context.push(AppRouter.categoriesPath),
             ),
             SizedBox(height: 12.h),
             AppSectionTile(
               title: 'Kelola stok',
-              subtitle: 'Pantau low stock dan movement log.',
               icon: Icons.inventory_2_outlined,
               onTap: () => context.push(AppRouter.stockPath),
             ),

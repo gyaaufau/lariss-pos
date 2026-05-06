@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                                   const _InfoCard(
                                     title: 'Belum ada produk aktif',
                                     message:
-                                        'Cart Day 7 sudah siap. Tambahkan produk di progress product supaya transaksi bisa langsung dipakai.',
+                                        'Tambahkan produk aktif agar transaksi bisa langsung dipakai.',
                                   )
                                 else if (filteredProducts.isEmpty)
                                   const _InfoCard(

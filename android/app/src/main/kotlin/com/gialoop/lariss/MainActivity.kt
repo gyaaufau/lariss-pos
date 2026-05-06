@@ -1,4 +1,4 @@
-package com.example.lariss
+package com.gialoop.lariss
 
 import io.flutter.embedding.android.FlutterActivity
 

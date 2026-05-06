@@ -210,9 +210,6 @@ class _ProductFormPageState extends State<ProductFormPage> {
                         value: _isActive,
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Produk aktif'),
-                        subtitle: const Text(
-                          'Produk aktif tampil di transaksi dan stok.',
-                        ),
                         onChanged: (value) {
                           setState(() {
                             _isActive = value;

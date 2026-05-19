@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/tokens/app_design_token.dart';
 import '../cubit/product_form_cubit.dart';
 
 class ProductFormPage extends StatefulWidget {
@@ -122,12 +123,12 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
           return SafeArea(
             child: ListView(
-              padding: EdgeInsets.all(16.r),
+              padding: AppDesignToken.cardPadding,
               children: <Widget>[
                 if (!hasCategories)
                   Container(
-                    margin: EdgeInsets.only(bottom: 16.h),
-                    padding: EdgeInsets.all(20.r),
+                    margin: EdgeInsets.only(bottom: AppDesignToken.formFieldGap),
+padding: AppDesignToken.cardPadding,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20.r),
@@ -138,7 +139,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     ),
                   ),
                 Container(
-                  padding: EdgeInsets.all(20.r),
+                  padding: AppDesignToken.cardPadding,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20.r),
@@ -153,9 +154,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
                             : 'Buat produk baru',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      SizedBox(height: 16.h),
-                      if (hasCategories)
-                        DropdownButtonFormField<String>(
+                      SizedBox(height: AppDesignToken.formFieldGap),
+                      DropdownButtonFormField<String>(
                           initialValue: _selectedCategoryId,
                           items: state.categories
                               .map(
@@ -174,14 +174,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
                             labelText: 'Kategori',
                           ),
                         ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.formFieldGap),
                       TextField(
                         controller: _nameController,
                         decoration: const InputDecoration(
                           labelText: 'Nama produk',
                         ),
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.formFieldGap),
                       TextField(
                         controller: _priceController,
                         keyboardType: TextInputType.number,
@@ -189,7 +189,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                           labelText: 'Harga jual',
                         ),
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.formFieldGap),
                       TextField(
                         controller: _stockController,
                         keyboardType: TextInputType.number,
@@ -197,7 +197,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                           labelText: 'Stok awal',
                         ),
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.formFieldGap),
                       TextField(
                         controller: _minimumStockController,
                         keyboardType: TextInputType.number,
@@ -205,7 +205,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                           labelText: 'Minimum stok',
                         ),
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       SwitchListTile(
                         value: _isActive,
                         contentPadding: EdgeInsets.zero,
@@ -219,7 +219,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: AppDesignToken.buttonSectionGap),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(

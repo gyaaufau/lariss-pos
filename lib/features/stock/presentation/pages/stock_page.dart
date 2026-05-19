@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/widgets/app_status_chip.dart';
 import '../../../profile/presentation/cubit/app_settings_cubit.dart';
 import '../cubit/stock_cubit.dart';
@@ -57,20 +58,20 @@ class _StockPageState extends State<StockPage> {
 
           return SafeArea(
             child: Padding(
-              padding: EdgeInsets.all(16.r),
+              padding: AppDesignToken.cardPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    'Pantau dan ubah stok produk.',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Detail stok dan update sekarang dibuka di layar terpisah.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  SizedBox(height: 20.h),
+                  // Text(
+                  //   'Pantau dan ubah stok produk.',
+                  //   style: Theme.of(context).textTheme.headlineSmall,
+                  // ),
+                  // SizedBox(height: AppDesignToken.infoRowGap),
+                  // Text(
+                  //   'Detail stok dan update sekarang dibuka di layar terpisah.',
+                  //   style: Theme.of(context).textTheme.bodyMedium,
+                  // ),
+                  // SizedBox(height: AppDesignToken.subtitleContentGap),
                   Row(
                     children: <Widget>[
                       Expanded(
@@ -80,7 +81,7 @@ class _StockPageState extends State<StockPage> {
                         ),
                       ),
                       if (showLowStockAlert) ...<Widget>[
-                        SizedBox(width: 12.w),
+                        SizedBox(width: AppDesignToken.infoRowGap * 1.5),
                         Expanded(
                           child: _SummaryCard(
                             title: 'Stok menipis',
@@ -91,7 +92,7 @@ class _StockPageState extends State<StockPage> {
                       ],
                     ],
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: AppDesignToken.subtitleContentGap),
                   Expanded(
                     child: isLoading
                         ? const Center(child: CircularProgressIndicator())
@@ -103,7 +104,7 @@ class _StockPageState extends State<StockPage> {
                             child: ListView.separated(
                               itemCount: state.products.length,
                               separatorBuilder: (_, _) =>
-                                  SizedBox(height: 12.h),
+                                  SizedBox(height: AppDesignToken.itemGap),
                               itemBuilder: (context, index) {
                                 final product = state.products[index];
                                 return _StockProductCard(
@@ -143,7 +144,7 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.r),
+      padding: AppDesignToken.cardPadding,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -153,7 +154,7 @@ class _SummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.bodyMedium),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             value,
             style: Theme.of(
@@ -194,7 +195,7 @@ class _StockProductCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16.r),
         child: Container(
-          padding: EdgeInsets.all(16.r),
+          padding: AppDesignToken.cardPadding,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(color: const Color(0xFFE2E8F0)),
@@ -206,12 +207,12 @@ class _StockProductCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(name, style: Theme.of(context).textTheme.titleMedium),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: AppDesignToken.infoRowGap),
                     Text('Stok $stock • Minimum $minimumStock'),
                   ],
                 ),
               ),
-              SizedBox(width: 12.w),
+              SizedBox(width: AppDesignToken.infoRowGap * 1.5),
               isOutOfStock
                   ? AppStatusChip.outOfStock()
                   : isLowStock && showLowStockAlert
@@ -231,7 +232,7 @@ class _EmptyStockState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -244,7 +245,7 @@ class _EmptyStockState extends StatelessWidget {
             'Belum ada produk aktif.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             'Aktifkan atau buat produk dulu supaya stok bisa dikelola.',
             textAlign: TextAlign.center,

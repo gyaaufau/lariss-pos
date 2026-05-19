@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../domain/profile_domain/domain/usecases/get_app_settings.dart';
 
 class SplashPage extends StatefulWidget {
@@ -64,7 +65,7 @@ class _SplashPageState extends State<SplashPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Image.asset('assets/brand/full logo.png', width: 260),
-                  SizedBox(height: 28.h),
+                  SizedBox(height: AppDesignToken.movementGroupGap * 1.75),
                   Text(
                     'POS simpel untuk pantau produk, stok, dan transaksi.',
                     textAlign: TextAlign.center,
@@ -72,7 +73,7 @@ class _SplashPageState extends State<SplashPage> {
                       color: const Color(0xFF475569),
                     ),
                   ),
-                  SizedBox(height: 28.h),
+                  SizedBox(height: AppDesignToken.movementGroupGap * 1.75),
                   SizedBox(
                     width: 28,
                     height: 28,

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/widgets/app_status_chip.dart';
 import '../../../../domain/category_domain/domain/entities/category_entity.dart';
 import '../../../../domain/cart_domain/domain/entities/cart_item_entity.dart';
@@ -131,10 +132,12 @@ class _HomePageState extends State<HomePage> {
                     child: ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.fromLTRB(
-                        16,
-                        16,
-                        16,
-                        cartState.isEmpty ? 24 : 112,
+                        AppDesignToken.cardPadding.left,
+                        AppDesignToken.cardPadding.top,
+                        AppDesignToken.cardPadding.right,
+                        cartState.isEmpty
+                            ? AppDesignToken.cardPadding.bottom * 1.5
+                            : 112,
                       ),
                       children: <Widget>[
                         if (lowStockCount > 0) ...<Widget>[
@@ -143,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                             onViewPressed: () =>
                                 _showLowStockDialog(lowStockProducts),
                           ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: AppDesignToken.sectionGap),
                         ],
                         ValueListenableBuilder<_ProductViewMode>(
                           valueListenable: _productViewModeNotifier,
@@ -166,7 +169,9 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 if (viewMode ==
                                     _ProductViewMode.grid) ...<Widget>[
-                                  SizedBox(height: 6.h),
+                                  SizedBox(
+                                    height: AppDesignToken.infoRowGap * 0.75,
+                                  ),
                                   Text(
                                     'Klik produk untuk masukkan ke cart',
                                     style: theme.textTheme.bodySmall?.copyWith(
@@ -174,13 +179,16 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                 ],
-                                SizedBox(height: 12.h),
+                                SizedBox(
+                                  height: AppDesignToken.subtitleContentGap,
+                                ),
                                 if (productState.status ==
                                         ProductStatus.loading &&
                                     filteredProducts.isEmpty)
                                   Padding(
                                     padding: EdgeInsets.symmetric(
-                                      vertical: 48.h,
+                                      vertical:
+                                          AppDesignToken.movementGroupGap * 3,
                                     ),
                                     child: Center(
                                       child: CircularProgressIndicator(),
@@ -309,7 +317,12 @@ class _HomePageState extends State<HomePage> {
 
         return AlertDialog(
           title: const Text('Stok menipis'),
-          contentPadding: EdgeInsets.fromLTRB(24.w, 12.h, 24.w, 8.h),
+          contentPadding: EdgeInsets.fromLTRB(
+            AppDesignToken.cardPadding.left + 8.r,
+            AppDesignToken.subtitleContentGap,
+            AppDesignToken.cardPadding.left + 8.r,
+            AppDesignToken.infoRowGap,
+          ),
           content: SizedBox(
             width: double.maxFinite,
             child: ConstrainedBox(
@@ -387,7 +400,7 @@ class _ProductSectionHeader extends StatelessWidget {
               isSelected: viewMode == _ProductViewMode.list,
               onPressed: () => onViewModeChanged(_ProductViewMode.list),
             ),
-            SizedBox(width: 8.w),
+            SizedBox(width: AppDesignToken.infoRowGap),
             _ViewModeButton(
               icon: Icons.grid_view_rounded,
               tooltip: 'Grid view',
@@ -397,13 +410,14 @@ class _ProductSectionHeader extends StatelessWidget {
           ],
         ),
         if (categories.isNotEmpty) ...<Widget>[
-          SizedBox(height: 12.h),
+          SizedBox(height: AppDesignToken.subtitleContentGap),
           SizedBox(
             height: 44,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: categories.length + 1,
-              separatorBuilder: (context, index) => SizedBox(width: 8.w),
+              separatorBuilder: (context, index) =>
+                  SizedBox(width: AppDesignToken.infoRowGap),
               itemBuilder: (BuildContext context, int index) {
                 if (index == 0) {
                   return _CategoryFilterChip(
@@ -460,7 +474,10 @@ class _CategoryFilterChip extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999.r)),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: 12.w,
+        vertical: AppDesignToken.infoRowGap,
+      ),
     );
   }
 }
@@ -557,7 +574,7 @@ class _ProductCollection extends StatelessWidget {
       children: products
           .map(
             (ProductEntity product) => Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
+              padding: EdgeInsets.only(bottom: AppDesignToken.itemGap),
               child: _ProductCard(
                 product: product,
                 quantityInCart: quantityForProduct(product),
@@ -589,7 +606,7 @@ class _AlertNotification extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.all(16.r),
+      padding: AppDesignToken.cardPadding,
       decoration: BoxDecoration(
         color: const Color(0xFFFFFBEB),
         borderRadius: BorderRadius.circular(20.r),
@@ -599,13 +616,13 @@ class _AlertNotification extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(top: 2.h),
+            padding: EdgeInsets.only(top: AppDesignToken.infoRowGap * 0.25),
             child: Icon(
               Icons.notification_important_outlined,
               color: Color(0xFFB45309),
             ),
           ),
-          SizedBox(width: 12.w),
+          SizedBox(width: AppDesignToken.infoRowGap * 1.5),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -617,7 +634,7 @@ class _AlertNotification extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: AppDesignToken.infoRowGap),
                 TextButton(
                   onPressed: onViewPressed,
                   style: TextButton.styleFrom(
@@ -700,7 +717,7 @@ class _ProductCard extends StatelessWidget {
                       size: isGridCard ? 22 : 24,
                     ),
                   ),
-                  SizedBox(width: 12.w),
+                  SizedBox(width: AppDesignToken.infoRowGap * 1.5),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -714,7 +731,7 @@ class _ProductCard extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: AppDesignToken.infoRowGap),
                         Text(
                           _formatCurrency(product.sellingPrice),
                           style: theme.textTheme.titleSmall?.copyWith(
@@ -733,7 +750,7 @@ class _ProductCard extends StatelessWidget {
                     AppStatusChip.lowStock(),
                 ],
               ),
-              SizedBox(height: 14.h),
+              SizedBox(height: AppDesignToken.cardTitleGap),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -753,7 +770,7 @@ class _ProductCard extends StatelessWidget {
                 ],
               ),
               if (!enableCardTapToAdd) ...<Widget>[
-                SizedBox(height: 16.h),
+                SizedBox(height: AppDesignToken.movementGroupGap),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
@@ -861,7 +878,12 @@ class _CheckoutBar extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
+      padding: EdgeInsets.fromLTRB(
+        AppDesignToken.cardPadding.left,
+        AppDesignToken.cardPadding.top,
+        AppDesignToken.cardPadding.right,
+        AppDesignToken.cardPadding.top * 1.5,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
@@ -883,7 +905,7 @@ class _CheckoutBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text('Cart aktif', style: theme.textTheme.titleMedium),
-                  SizedBox(height: 4.h),
+                  SizedBox(height: AppDesignToken.infoRowGap * 0.5),
                   Text(
                     '${state.totalItems} item • ${_formatCurrency(state.totalAmount)}',
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -893,7 +915,7 @@ class _CheckoutBar extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(width: 12.w),
+            SizedBox(width: AppDesignToken.infoRowGap * 1.5),
             FilledButton(onPressed: onPressed, child: const Text('Checkout')),
           ],
         ),
@@ -928,7 +950,12 @@ class _CartSummarySheet extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         ),
-        padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 24.h),
+        padding: EdgeInsets.fromLTRB(
+          AppDesignToken.cardPadding.left + 4.w,
+          AppDesignToken.infoRowGap + 2.h,
+          AppDesignToken.cardPadding.left + 4.w,
+          AppDesignToken.cardPadding.top * 1.5,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -948,13 +975,14 @@ class _CartSummarySheet extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: AppDesignToken.subtitleContentGap),
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 320),
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: state.items.length,
-                separatorBuilder: (_, _) => SizedBox(height: 8.h),
+                separatorBuilder: (_, _) =>
+                    SizedBox(height: AppDesignToken.infoRowGap),
                 itemBuilder: (context, index) {
                   final CartItemEntity item = state.items[index];
 
@@ -967,7 +995,7 @@ class _CartSummarySheet extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: AppDesignToken.subtitleContentGap),
             Row(
               children: <Widget>[
                 Text('Total', style: theme.textTheme.titleMedium),
@@ -980,7 +1008,7 @@ class _CartSummarySheet extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: AppDesignToken.subtitleContentGap),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
@@ -1036,7 +1064,7 @@ class _CartItemTile extends StatelessWidget {
                       softWrap: false,
                       style: theme.textTheme.titleSmall,
                     ),
-                    SizedBox(height: 2.h),
+                    SizedBox(height: AppDesignToken.infoRowGap * 0.25),
                     Text(
                       _formatCurrency(item.subtotal),
                       style: theme.textTheme.titleSmall?.copyWith(
@@ -1046,7 +1074,7 @@ class _CartItemTile extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: AppDesignToken.infoRowGap),
               IconButton(
                 onPressed: onRemove,
                 icon: const Icon(Icons.close, size: 18),
@@ -1056,7 +1084,7 @@ class _CartItemTile extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Row(
             children: <Widget>[
               Expanded(
@@ -1158,7 +1186,10 @@ class _ProductInfoPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: 10.w,
+        vertical: AppDesignToken.infoRowGap,
+      ),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(999.r),
@@ -1168,7 +1199,7 @@ class _ProductInfoPill extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Icon(icon, size: 16, color: foregroundColor),
-          SizedBox(width: 6.w),
+          SizedBox(width: AppDesignToken.infoRowGap * 0.75),
           Text(
             label,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -1192,7 +1223,7 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top + 4.r),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -1202,7 +1233,7 @@ class _InfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.titleMedium),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(message, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),

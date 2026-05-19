@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/app_status_chip.dart';
 import '../cubit/product_cubit.dart';
@@ -88,25 +89,27 @@ class _ProductsPageState extends State<ProductsPage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<ProductCubit>().loadProducts(),
               child: ListView(
-                padding: EdgeInsets.all(16.r),
+                padding: AppDesignToken.cardPadding,
                 children: <Widget>[
                   Text(
                     'Kelola produk untuk transaksi harian.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: AppDesignToken.infoRowGap),
                   Text(
                     'List, detail, dan form dipisah agar alur lebih siap rilis.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: AppDesignToken.subtitleContentGap),
                   if (state.categories.isEmpty)
                     _MissingCategoryCard(
                       onTap: () => context.push(AppRouter.categoriesPath),
                     )
                   else if (isLoading)
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 48.h),
+                      padding: EdgeInsets.symmetric(
+                        vertical: AppDesignToken.movementGroupGap * 3,
+                      ),
                       child: Center(child: CircularProgressIndicator()),
                     )
                   else if (state.products.isEmpty)
@@ -114,7 +117,7 @@ class _ProductsPageState extends State<ProductsPage> {
                   else
                     ...state.products.map(
                       (product) => Padding(
-                        padding: EdgeInsets.only(bottom: 12.h),
+                        padding: EdgeInsets.only(bottom: AppDesignToken.itemGap),
                         child: _ProductCard(
                           name: product.name,
                           categoryName: _categoryName(
@@ -166,8 +169,8 @@ class _ProductCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20.r),
-        child: Container(
-          padding: EdgeInsets.all(16.r),
+          child: Container(
+            padding: AppDesignToken.cardPadding,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(color: const Color(0xFFE2E8F0)),
@@ -186,11 +189,11 @@ class _ProductCard extends StatelessWidget {
                   const Icon(Icons.chevron_right),
                 ],
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: AppDesignToken.infoRowGap),
               Text(categoryName),
-              SizedBox(height: 4.h),
+              SizedBox(height: AppDesignToken.infoRowGap * 0.5),
               Text(price, style: Theme.of(context).textTheme.titleSmall),
-              SizedBox(height: 12.h),
+              SizedBox(height: AppDesignToken.subtitleContentGap),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -219,7 +222,7 @@ class _MissingCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -231,13 +234,13 @@ class _MissingCategoryCard extends StatelessWidget {
             'Buat kategori dulu.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             'Produk butuh kategori aktif sebelum bisa dibuat.',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppDesignToken.movementGroupGap),
           FilledButton(onPressed: onTap, child: const Text('Buka kategori')),
         ],
       ),
@@ -251,7 +254,7 @@ class _EmptyProductState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -263,7 +266,7 @@ class _EmptyProductState extends StatelessWidget {
             'Belum ada produk.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             'Tambah produk pertama dari tombol di kanan bawah.',
             textAlign: TextAlign.center,

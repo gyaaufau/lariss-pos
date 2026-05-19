@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../domain/profile_domain/domain/entities/store_profile_entity.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
@@ -63,7 +64,7 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<ProfileCubit>().loadProfile(),
               child: ListView(
-                padding: EdgeInsets.all(16.r),
+                padding: AppDesignToken.cardPadding,
                 children: <Widget>[
                   _StoreProfileCard(
                     profile: state.profile,
@@ -88,7 +89,7 @@ class _StoreProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.r),
+      padding: AppDesignToken.cardPadding,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.r),
@@ -98,16 +99,16 @@ class _StoreProfileCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Profil toko', style: Theme.of(context).textTheme.titleLarge),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             'Lihat identitas toko di sini. Ubah data lewat halaman terpisah.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppDesignToken.cardTitleGap),
           _InfoRow(label: 'Nama toko', value: profile?.storeName ?? '-'),
-          SizedBox(height: 12.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           _InfoRow(label: 'Nama owner', value: profile?.ownerName ?? '-'),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppDesignToken.cardTitleGap),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -139,7 +140,7 @@ class _InfoRow extends StatelessWidget {
             context,
           ).textTheme.labelMedium?.copyWith(color: const Color(0xFF64748B)),
         ),
-        SizedBox(height: 4.h),
+        SizedBox(height: AppDesignToken.infoRowGap * 0.5),
         Text(value, style: Theme.of(context).textTheme.titleMedium),
       ],
     );

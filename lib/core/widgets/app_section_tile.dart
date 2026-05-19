@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../tokens/app_design_token.dart';
+
 class AppSectionTile extends StatelessWidget {
   const AppSectionTile({
     required this.title,
@@ -28,10 +30,10 @@ class AppSectionTile extends StatelessWidget {
         onTap: isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(24.r),
         child: Ink(
-          padding: EdgeInsets.all(20.r),
+          padding: AppDesignToken.cardPadding,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(24.r),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
           child: Row(

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../domain/transaction_domain/domain/entities/transaction_entity.dart';
 import '../../../../domain/transaction_domain/domain/entities/transaction_item_entity.dart';
 import '../cubit/history_cubit.dart';
@@ -78,11 +79,11 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
               onRefresh: _loadDetail,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.all(16.r),
+                padding: AppDesignToken.cardPadding,
                 children: <Widget>[
                   if (isLoading) ...<Widget>[
                     const LinearProgressIndicator(),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: AppDesignToken.movementGroupGap),
                   ],
                   _SectionCard(
                     child: Column(
@@ -92,12 +93,12 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                           transaction.invoiceNumber,
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: AppDesignToken.infoRowGap),
                         Text(
                           formatDateTime(transaction.createdAt),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        SizedBox(height: 20.h),
+                        SizedBox(height: AppDesignToken.sectionGap),
                         Row(
                           children: <Widget>[
                             Expanded(
@@ -106,7 +107,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                                 value: '${transaction.totalItem}',
                               ),
                             ),
-                            SizedBox(width: 12.w),
+                            SizedBox(width: AppDesignToken.infoRowGap * 1.5),
                             Expanded(
                               child: _HighlightMetric(
                                 label: 'Total',
@@ -119,13 +120,13 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: AppDesignToken.sectionGap),
                   Text(
                     'Item belanja',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  SizedBox(height: 12.h),
-                  if (transaction.items.isEmpty)
+                      SizedBox(height: AppDesignToken.subtitleContentGap),
+                      if (transaction.items.isEmpty)
                     const _EmptyItemsCard()
                   else
                     ...transaction.items.map(
@@ -145,18 +146,18 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                                         context,
                                       ).textTheme.titleSmall,
                                     ),
-                                    SizedBox(height: 6.h),
-                                    Text(
-                                      '${item.quantity} x ${formatCurrency(item.productPrice)}',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Text(
+                    SizedBox(height: AppDesignToken.infoRowGap * 0.75),
+                    Text(
+                      '${item.quantity} x ${formatCurrency(item.productPrice)}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: AppDesignToken.infoRowGap * 1.5),
+              Text(
                                 formatCurrency(item.subtotal),
                                 style: Theme.of(context).textTheme.titleSmall,
                               ),
@@ -165,12 +166,12 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                         ),
                       ),
                     ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Ringkasan pembayaran',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  SizedBox(height: 12.h),
+                    SizedBox(height: AppDesignToken.infoRowGap),
+                    Text(
+                      'Ringkasan pembayaran',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    SizedBox(height: AppDesignToken.subtitleContentGap),
                   _SectionCard(
                     child: Column(
                       children: <Widget>[
@@ -178,12 +179,12 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                           label: 'Total transaksi',
                           value: formatCurrency(transaction.totalAmount),
                         ),
-                        SizedBox(height: 12.h),
+                        SizedBox(height: AppDesignToken.subtitleContentGap),
                         _InfoRow(
                           label: 'Nominal dibayar',
                           value: formatCurrency(transaction.paidAmount),
                         ),
-                        SizedBox(height: 12.h),
+                        SizedBox(height: AppDesignToken.subtitleContentGap),
                         _InfoRow(
                           label: 'Kembalian',
                           value: formatCurrency(transaction.changeAmount),
@@ -210,7 +211,7 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top + 4.r),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -235,7 +236,7 @@ class _HighlightMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.r),
+      padding: AppDesignToken.cardPadding,
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16.r),
@@ -244,7 +245,7 @@ class _HighlightMetric extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          SizedBox(height: 6.h),
+          SizedBox(height: AppDesignToken.infoRowGap * 0.75),
           Text(
             value,
             style: Theme.of(
@@ -269,7 +270,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(label)),
-        SizedBox(width: 16.w),
+        SizedBox(width: AppDesignToken.movementGroupGap),
         Text(
           value,
           style: Theme.of(

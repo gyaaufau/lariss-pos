@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/tokens/app_design_token.dart';
 import '../cubit/category_form_cubit.dart';
 
 class CategoryFormPage extends StatefulWidget {
@@ -77,10 +78,10 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
 
           return SafeArea(
             child: ListView(
-              padding: EdgeInsets.all(16.r),
+              padding: AppDesignToken.cardPadding,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(20.r),
+                  padding: AppDesignToken.cardPadding,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20.r),
@@ -95,7 +96,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
                             : 'Buat kategori baru',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       TextField(
                         controller: _nameController,
                         textInputAction: TextInputAction.done,
@@ -108,7 +109,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: AppDesignToken.buttonSectionGap),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(

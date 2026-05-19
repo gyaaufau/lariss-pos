@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../domain/stock_domain/domain/entities/stock_update_type.dart';
 import '../cubit/stock_update_cubit.dart';
 
@@ -83,10 +84,10 @@ class _StockUpdatePageState extends State<StockUpdatePage> {
 
           return SafeArea(
             child: ListView(
-              padding: EdgeInsets.all(16.r),
+              padding: AppDesignToken.cardPadding,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(20.r),
+                  padding: AppDesignToken.cardPadding,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20.r),
@@ -99,9 +100,9 @@ class _StockUpdatePageState extends State<StockUpdatePage> {
                         product.name,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       Text('Stok sekarang: ${product.currentStock}'),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: AppDesignToken.cardTitleGap),
                       DropdownButtonFormField<StockUpdateType>(
                         initialValue: _selectedType,
                         items: StockUpdateType.values
@@ -124,7 +125,7 @@ class _StockUpdatePageState extends State<StockUpdatePage> {
                           labelText: 'Tipe perubahan',
                         ),
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.formFieldGap),
                       TextField(
                         controller: _quantityController,
                         keyboardType: TextInputType.number,
@@ -136,7 +137,7 @@ class _StockUpdatePageState extends State<StockUpdatePage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: AppDesignToken.buttonSectionGap),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(

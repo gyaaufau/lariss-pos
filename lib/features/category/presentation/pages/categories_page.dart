@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../cubit/category_cubit.dart';
 import '../cubit/category_state.dart';
 
@@ -66,21 +67,23 @@ class _CategoriesPageState extends State<CategoriesPage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<CategoryCubit>().loadCategories(),
               child: ListView(
-                padding: EdgeInsets.all(16.r),
+                padding: AppDesignToken.cardPadding,
                 children: <Widget>[
                   Text(
                     'Kelola kategori produk.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: AppDesignToken.infoRowGap),
                   Text(
                     'Pisah list, detail, dan form supaya flow lebih rapi untuk app mobile.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: AppDesignToken.subtitleContentGap),
                   if (isLoading)
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 48.h),
+                      padding: EdgeInsets.symmetric(
+                        vertical: AppDesignToken.movementGroupGap * 3,
+                      ),
                       child: Center(child: CircularProgressIndicator()),
                     )
                   else if (state.categories.isEmpty)
@@ -88,7 +91,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   else
                     ...state.categories.map(
                       (category) => Padding(
-                        padding: EdgeInsets.only(bottom: 12.h),
+                        padding: EdgeInsets.only(bottom: AppDesignToken.itemGap),
                         child: _CategoryCard(
                           name: category.name,
                           onTap: () => _openDetailPage(category.id),
@@ -120,7 +123,7 @@ class _CategoryCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16.r),
         child: Container(
-          padding: EdgeInsets.all(16.r),
+          padding: AppDesignToken.cardPadding,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(color: const Color(0xFFE2E8F0)),
@@ -135,7 +138,7 @@ class _CategoryCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              SizedBox(width: 12.w),
+              SizedBox(width: AppDesignToken.infoRowGap * 1.5),
               Expanded(
                 child: Text(
                   name,
@@ -158,7 +161,7 @@ class _EmptyCategoryState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -170,7 +173,7 @@ class _EmptyCategoryState extends StatelessWidget {
             'Belum ada kategori.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             'Tambah kategori pertama dari tombol di kanan bawah.',
             textAlign: TextAlign.center,

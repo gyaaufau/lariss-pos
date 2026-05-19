@@ -16,7 +16,7 @@ import '../../features/checkout/presentation/pages/checkout_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
 import '../../features/history/presentation/pages/transaction_detail_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/manage/presentation/pages/manage_page.dart';
+import '../../features/cash_flow/presentation/pages/cash_flow_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/onboarding/presentation/pages/splash_page.dart';
 import '../../features/profile/presentation/cubit/app_settings_cubit.dart';
@@ -49,7 +49,7 @@ class AppRouter {
   static const String historyPath = '/history';
   static const String trendPath = '/trend';
   static const String trendExportPath = '/trend/export';
-  static const String managePath = '/manage';
+  static const String cashFlowPath = '/cash-flow';
   static const String profilePath = '/profile';
   static const String storeProfilePath = '/profile/store';
   static const String profileEditPath = '/profile/edit';
@@ -173,8 +173,8 @@ class AppRouter {
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: managePath,
-                builder: (context, state) => const ManagePage(),
+                path: cashFlowPath,
+                builder: (context, state) => const CashFlowPage(),
               ),
             ],
           ),

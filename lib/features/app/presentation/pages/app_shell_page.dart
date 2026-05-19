@@ -39,9 +39,9 @@ class AppShellPage extends StatelessWidget {
             label: 'Trend',
           ),
           NavigationDestination(
-            icon: Icon(Icons.dashboard_customize_outlined),
-            selectedIcon: Icon(Icons.dashboard_customize),
-            label: 'Kelola',
+            icon: Icon(Icons.money_outlined),
+            selectedIcon: Icon(Icons.money),
+            label: 'Cash Flow',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),

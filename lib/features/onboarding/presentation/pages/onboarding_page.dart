@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../domain/profile_domain/domain/usecases/get_app_settings.dart';
 import '../../../../domain/profile_domain/domain/usecases/save_app_settings.dart';
 
@@ -59,7 +60,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(24.w, 18.h, 24.w, 24.h),
+          padding: EdgeInsets.fromLTRB(
+            AppDesignToken.cardPadding.left + 8.r,
+            AppDesignToken.cardPadding.top + 2.r,
+            AppDesignToken.cardPadding.left + 8.r,
+            AppDesignToken.cardPadding.bottom + 8.r,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -72,8 +78,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
               ),
               const Spacer(),
               Center(
-                child: Container(
-                  padding: EdgeInsets.all(24.r),
+              child: Container(
+                padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(32.r),
@@ -89,29 +95,29 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   child: Image.asset('assets/brand/full logo.png', width: 240),
                 ),
               ),
-              SizedBox(height: 40.h),
+              SizedBox(height: AppDesignToken.movementGroupGap * 2.5),
               Text(
                 'Kelola toko lebih rapi',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: AppDesignToken.subtitleContentGap),
               Text(
                 'Cek produk aktif, pantau stok menipis, dan proses transaksi dari satu app.',
                 style: theme.textTheme.bodyLarge,
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: AppDesignToken.movementGroupGap * 1.5),
               const _FeatureTile(
                 icon: Icons.inventory_2_outlined,
                 title: 'Produk terstruktur',
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: AppDesignToken.subtitleContentGap),
               const _FeatureTile(
                 icon: Icons.auto_graph_rounded,
                 title: 'Stok lebih aman',
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: AppDesignToken.subtitleContentGap),
               const _FeatureTile(
                 icon: Icons.point_of_sale_rounded,
                 title: 'Transaksi lebih ringkas',
@@ -122,7 +128,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: FilledButton(
                   onPressed: _isSubmitting ? null : _finishOnboarding,
                   style: FilledButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    padding: EdgeInsets.symmetric(
+                      vertical: AppDesignToken.movementGroupGap,
+                    ),
                   ),
                   child: Text(_isSubmitting ? 'Memuat...' : 'Mulai pakai'),
                 ),
@@ -144,7 +152,7 @@ class _FeatureTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.r),
+      padding: AppDesignToken.cardPadding,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -161,7 +169,7 @@ class _FeatureTile extends StatelessWidget {
             ),
             child: Icon(icon, color: const Color(0xFF14B88F)),
           ),
-          SizedBox(width: 14.w),
+          SizedBox(width: AppDesignToken.cardTitleGap + 2.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

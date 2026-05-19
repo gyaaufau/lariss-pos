@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/app_status_chip.dart';
 import '../cubit/product_detail_cubit.dart';
@@ -105,7 +106,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
           return SafeArea(
             child: ListView(
-              padding: EdgeInsets.all(16.r),
+              padding: AppDesignToken.cardPadding,
               children: <Widget>[
                 _SectionCard(
                   child: Column(
@@ -115,7 +116,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         product.name,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -137,30 +138,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: AppDesignToken.sectionGap),
                 _SectionCard(
                   child: Column(
                     children: <Widget>[
-                      _InfoRow(
-                        label: 'Harga jual',
-                        value: formatCurrency(product.sellingPrice),
-                      ),
-                      SizedBox(height: 12.h),
+_InfoRow(
+                          label: 'Harga jual',
+                          value: formatCurrency(product.sellingPrice),
+                        ),
+                        SizedBox(height: AppDesignToken.infoRowGap),
                       _InfoRow(
                         label: 'Stok sekarang',
                         value: '${product.currentStock}',
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       _InfoRow(
                         label: 'Minimum stok',
                         value: '${product.minimumStock}',
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       _InfoRow(
                         label: 'Dibuat',
                         value: formatDateTime(product.createdAt),
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       _InfoRow(
                         label: 'Diubah',
                         value: formatDateTime(product.updatedAt),
@@ -168,7 +169,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: AppDesignToken.sectionGap),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -177,7 +178,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     label: const Text('Edit produk'),
                   ),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: AppDesignToken.buttonGap),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -203,7 +204,7 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.r),
+      padding: AppDesignToken.cardPadding,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -225,7 +226,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(label)),
-        SizedBox(width: 16.w),
+        SizedBox(width: AppDesignToken.movementGroupGap),
         Text(value, style: Theme.of(context).textTheme.titleSmall),
       ],
     );
@@ -241,7 +242,10 @@ class _Tag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: 10.w,
+        vertical: AppDesignToken.infoRowGap * 0.75,
+      ),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(999.r),

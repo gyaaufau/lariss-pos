@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/tokens/app_design_token.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/profile_state.dart';
 
@@ -91,13 +92,13 @@ class _EditStoreProfilePageState extends State<EditStoreProfilePage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<ProfileCubit>().loadProfile(),
               child: ListView(
-                padding: EdgeInsets.all(16.r),
+                padding: AppDesignToken.cardPadding,
                 children: <Widget>[
                   _StoreProfileFormCard(
                     storeNameController: _storeNameController,
                     ownerNameController: _ownerNameController,
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: AppDesignToken.movementGroupGap),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
@@ -129,7 +130,7 @@ class _StoreProfileFormCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top + 4.r),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.r),
@@ -139,12 +140,12 @@ class _StoreProfileFormCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text('Profil toko', style: Theme.of(context).textTheme.titleLarge),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             'Ubah identitas toko untuk dipakai di home, transaksi, dan ringkasan app.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppDesignToken.movementGroupGap),
           TextField(
             controller: storeNameController,
             textInputAction: TextInputAction.next,
@@ -153,7 +154,7 @@ class _StoreProfileFormCard extends StatelessWidget {
               hintText: 'Contoh: KasirLite',
             ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: AppDesignToken.formFieldGap),
           TextField(
             controller: ownerNameController,
             textInputAction: TextInputAction.done,

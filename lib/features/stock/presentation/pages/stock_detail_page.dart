@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../domain/stock_domain/domain/entities/stock_movement_entity.dart';
 import '../cubit/stock_detail_cubit.dart';
@@ -124,7 +125,7 @@ class _StockDetailPageState extends State<StockDetailPage> {
 
           return SafeArea(
             child: ListView(
-              padding: EdgeInsets.all(16.r),
+              padding: AppDesignToken.cardPadding,
               children: <Widget>[
                 _Card(
                   child: Column(
@@ -134,17 +135,17 @@ class _StockDetailPageState extends State<StockDetailPage> {
                         product.name,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: AppDesignToken.cardTitleGap),
                       _InfoRow(
                         label: 'Stok sekarang',
                         value: '${product.currentStock}',
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       _InfoRow(
                         label: 'Minimum stok',
                         value: '${product.minimumStock}',
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: AppDesignToken.infoRowGap),
                       _InfoRow(
                         label: 'Harga jual',
                         value: formatCurrency(product.sellingPrice),
@@ -152,7 +153,7 @@ class _StockDetailPageState extends State<StockDetailPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: AppDesignToken.sectionGap),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -161,13 +162,13 @@ class _StockDetailPageState extends State<StockDetailPage> {
                     label: const Text('Update stok'),
                   ),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: AppDesignToken.movementGroupGap),
                 Text(
                   'Riwayat perubahan',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                SizedBox(height: 12.h),
-                if (state.movements.isEmpty)
+                  SizedBox(height: AppDesignToken.infoRowGap),
+                  if (state.movements.isEmpty)
                   const _EmptyMovementState()
                 else
                   ...groupedMovements.map(
@@ -184,10 +185,10 @@ class _StockDetailPageState extends State<StockDetailPage> {
                                   color: const Color(0xFF475569),
                                 ),
                           ),
-                          SizedBox(height: 12.h),
+                          SizedBox(height: AppDesignToken.subtitleContentGap),
                           ...group.movements.map(
                             (movement) => Padding(
-                              padding: EdgeInsets.only(bottom: 12.h),
+                              padding: EdgeInsets.only(bottom: AppDesignToken.itemGap),
                               child: _Card(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,22 +199,22 @@ class _StockDetailPageState extends State<StockDetailPage> {
                                         context,
                                       ).textTheme.titleMedium,
                                     ),
-                                    SizedBox(height: 8.h),
+                                    SizedBox(height: AppDesignToken.infoRowGap),
                                     _InfoRow(
                                       label: 'Jumlah',
                                       value: '${movement.quantity}',
                                     ),
-                                    SizedBox(height: 8.h),
+                                    SizedBox(height: AppDesignToken.infoRowGap),
                                     _InfoRow(
                                       label: 'Sebelum',
                                       value: '${movement.stockBefore}',
                                     ),
-                                    SizedBox(height: 8.h),
+                                    SizedBox(height: AppDesignToken.infoRowGap),
                                     _InfoRow(
                                       label: 'Sesudah',
                                       value: '${movement.stockAfter}',
                                     ),
-                                    SizedBox(height: 8.h),
+                                    SizedBox(height: AppDesignToken.infoRowGap),
                                     _InfoRow(
                                       label: 'Waktu',
                                       value: formatDateTime(movement.createdAt),
@@ -251,7 +252,7 @@ class _Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top + 4.r),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -273,7 +274,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(label)),
-        SizedBox(width: 16.w),
+        SizedBox(width: AppDesignToken.movementGroupGap),
         Text(value, style: Theme.of(context).textTheme.titleSmall),
       ],
     );
@@ -286,7 +287,7 @@ class _EmptyMovementState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top + 4.r),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),

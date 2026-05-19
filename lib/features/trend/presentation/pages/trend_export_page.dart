@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../domain/trend_domain/domain/entities/trend_dashboard_entity.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../domain/trend_domain/domain/usecases/get_trend_dashboard.dart';
 import '../services/trend_csv_exporter.dart';
 import '../services/trend_export_file_handler.dart';
@@ -32,10 +33,10 @@ class TrendExportPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(24.r),
+            padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.all(24.r),
+              padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
               decoration: BoxDecoration(
                 color: colorScheme.surface,
                 border: Border.all(color: colorScheme.outlineVariant),
@@ -49,7 +50,7 @@ class TrendExportPage extends StatelessWidget {
                     size: 56,
                     color: colorScheme.primary,
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: AppDesignToken.movementGroupGap),
                   Text(
                     'Coming soon',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -57,7 +58,7 @@ class TrendExportPage extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: AppDesignToken.infoRowGap),
                   Text(
                     'Fitur export trend sedang disiapkan. Balik lagi nanti.',
                     style: Theme.of(context).textTheme.bodyMedium,

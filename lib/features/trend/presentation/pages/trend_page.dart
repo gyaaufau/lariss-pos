@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../domain/transaction_domain/domain/entities/transaction_entity.dart';
 import '../../../../domain/transaction_domain/domain/usecases/get_transaction_history.dart';
@@ -50,7 +51,7 @@ class _TrendPageState extends State<TrendPage> {
         title: const Text('Trend penjualan'),
         actions: <Widget>[
           Padding(
-            padding: EdgeInsets.only(right: 12.w),
+             padding: EdgeInsets.only(right: AppDesignToken.infoRowGap * 1.5),
             child: TextButton.icon(
               onPressed: dashboard == null
                   ? null
@@ -65,7 +66,7 @@ class _TrendPageState extends State<TrendPage> {
                 backgroundColor: colorScheme.primary,
                 disabledForegroundColor: const Color(0xFF94A3B8),
                 disabledBackgroundColor: const Color(0xFFF1F5F9),
-                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 14, vertical: AppDesignToken.infoRowGap + 2.h),
                 shape: const StadiumBorder(),
               ),
             ),
@@ -90,7 +91,12 @@ class _TrendPageState extends State<TrendPage> {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0.h),
+                  padding: EdgeInsets.fromLTRB(
+                    AppDesignToken.cardPadding.left,
+                    AppDesignToken.cardPadding.top,
+                    AppDesignToken.cardPadding.right,
+                    0,
+                  ),
                   child: _TrendRangeTabs(
                     selectedRange: state.selectedRange,
                     selectedFilter: state.selectedFilter,
@@ -103,7 +109,7 @@ class _TrendPageState extends State<TrendPage> {
                 if (state.isRefreshing) const LinearProgressIndicator(),
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.all(16.r),
+                    padding: AppDesignToken.cardPadding,
                     child: isInitialLoading
                         ? const _TrendLoadingState()
                         : dashboard == null || !dashboard.hasActivity
@@ -130,7 +136,7 @@ class _TrendPageState extends State<TrendPage> {
                                         color: const Color(0xFF2563EB),
                                       ),
                                     ),
-                                    SizedBox(width: 12.w),
+                                    SizedBox(width: AppDesignToken.infoRowGap * 1.5),
                                     Expanded(
                                       child: _KpiCard(
                                         title: 'Transaksi',
@@ -145,7 +151,7 @@ class _TrendPageState extends State<TrendPage> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 16.h),
+                                 SizedBox(height: AppDesignToken.movementGroupGap),
                                 _ChartPanel(
                                   title: 'Insight cepat',
                                   subtitle: 'Ringkas performa range aktif',
@@ -163,7 +169,7 @@ class _TrendPageState extends State<TrendPage> {
                                           (TrendInsightEntity insight) =>
                                               Padding(
                                                 padding: EdgeInsets.only(
-                                                  top: 12,
+                                                  top: AppDesignToken.itemGap,
                                                 ),
                                                 child: _InsightCard(
                                                   title: insight.title,
@@ -175,7 +181,7 @@ class _TrendPageState extends State<TrendPage> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 16.h),
+                                 SizedBox(height: AppDesignToken.movementGroupGap),
                                 _ChartPanel(
                                   title: 'Revenue trend',
                                   subtitle: _rangeDescription(
@@ -202,7 +208,7 @@ class _TrendPageState extends State<TrendPage> {
                                             '${point.label}\n${formatCurrency(point.totalSales)}',
                                   ),
                                 ),
-                                SizedBox(height: 16.h),
+                                 SizedBox(height: AppDesignToken.movementGroupGap),
                                 _ChartPanel(
                                   title: 'Transaction trend',
                                   subtitle: 'Volume transaksi per bucket waktu',
@@ -226,7 +232,7 @@ class _TrendPageState extends State<TrendPage> {
                                             '${point.label}\n${point.totalTransactions} trx',
                                   ),
                                 ),
-                                SizedBox(height: 16.h),
+                                 SizedBox(height: AppDesignToken.movementGroupGap),
                                 _ChartPanel(
                                   title: 'Jam ramai',
                                   subtitle:
@@ -250,7 +256,7 @@ class _TrendPageState extends State<TrendPage> {
                                             '${item.totalQuantity} trx',
                                   ),
                                 ),
-                                SizedBox(height: 16.h),
+                                 SizedBox(height: AppDesignToken.movementGroupGap),
                                 _ChartPanel(
                                   title: 'Top product',
                                   subtitle: 'Top 5 produk by qty',
@@ -259,7 +265,7 @@ class _TrendPageState extends State<TrendPage> {
                                     color: const Color(0xFFF59E0B),
                                   ),
                                 ),
-                                SizedBox(height: 16.h),
+                                 SizedBox(height: AppDesignToken.movementGroupGap),
                                 _ChartPanel(
                                   title: 'Top kategori',
                                   subtitle: 'Top 5 kategori by qty',
@@ -268,7 +274,7 @@ class _TrendPageState extends State<TrendPage> {
                                     color: const Color(0xFF8B5CF6),
                                   ),
                                 ),
-                                SizedBox(height: 16.h),
+                                 SizedBox(height: AppDesignToken.movementGroupGap),
                                 _ChartPanel(
                                   title: 'Produk turun',
                                   subtitle:
@@ -277,7 +283,7 @@ class _TrendPageState extends State<TrendPage> {
                                     items: dashboard.productDrops,
                                   ),
                                 ),
-                                SizedBox(height: 16.h),
+                                 SizedBox(height: AppDesignToken.movementGroupGap),
                                 _ChartPanel(
                                   title: 'Kategori turun',
                                   subtitle:
@@ -400,7 +406,7 @@ class _TrendRangeTabs extends StatelessWidget {
           ].map((TrendRange range) {
             final bool isSelected = range == selectedRange;
             return Padding(
-              padding: EdgeInsets.only(right: 8.w),
+              padding: EdgeInsets.only(right: AppDesignToken.infoRowGap),
               child: ChoiceChip(
                 label: Text(_rangeLabel(range)),
                 selected: isSelected,
@@ -441,7 +447,7 @@ class _KpiCard extends StatelessWidget {
     final bool showComparison = comparison.previousValue > 0;
 
     return Container(
-      padding: EdgeInsets.all(16.r),
+      padding: AppDesignToken.cardPadding,
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20.r),
@@ -451,7 +457,7 @@ class _KpiCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.bodyMedium),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -460,7 +466,7 @@ class _KpiCard extends StatelessWidget {
             ),
           ),
           if (showComparison) ...<Widget>[
-            SizedBox(height: 10.h),
+            SizedBox(height: AppDesignToken.infoRowGap * 1.25),
             _ComparisonBadge(comparison: comparison),
           ],
         ],
@@ -484,7 +490,7 @@ class _InsightCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(14.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top - 2.r),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(18.r),
@@ -494,14 +500,14 @@ class _InsightCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.bodyMedium),
-          SizedBox(height: 6.h),
+          SizedBox(height: AppDesignToken.infoRowGap * 0.75),
           Text(
             value,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
-          SizedBox(height: 4.h),
+          SizedBox(height: AppDesignToken.infoRowGap * 0.5),
           Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
@@ -536,7 +542,7 @@ class _ComparisonBadge extends StatelessWidget {
     return Row(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: AppDesignToken.infoRowGap * 0.75),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(999.r),
@@ -550,7 +556,7 @@ class _ComparisonBadge extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(width: 8.w),
+         SizedBox(width: AppDesignToken.infoRowGap),
         Expanded(
           child: Text(
             _comparisonCaption(comparison),
@@ -577,7 +583,7 @@ class _ChartPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.25),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.r),
@@ -587,9 +593,9 @@ class _ChartPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.titleMedium),
-          SizedBox(height: 4.h),
+          SizedBox(height: AppDesignToken.infoRowGap * 0.5),
           Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
-          SizedBox(height: 20.h),
+           SizedBox(height: AppDesignToken.sectionGap),
           child,
         ],
       ),
@@ -699,7 +705,7 @@ class _LineTrendChart extends StatelessWidget {
                     return const SizedBox.shrink();
                   }
                   return Padding(
-                    padding: EdgeInsets.only(top: 8.h),
+                     padding: EdgeInsets.only(top: AppDesignToken.infoRowGap),
                     child: Text(
                       points[index].shortLabel,
                       style: TextStyle(fontSize: 10.sp),
@@ -830,7 +836,7 @@ class _BreakdownBarChart extends StatelessWidget {
                     return const SizedBox.shrink();
                   }
                   return Padding(
-                    padding: EdgeInsets.only(top: 8.h),
+                     padding: EdgeInsets.only(top: AppDesignToken.infoRowGap),
                     child: Text(
                       _trimLabel(items[index].label),
                       textAlign: TextAlign.center,
@@ -872,9 +878,9 @@ class _TrendLoadingState extends StatelessWidget {
     return ListView(
       children: <Widget>[
         _LoadingBlock(height: 96),
-        SizedBox(height: 16.h),
+        SizedBox(height: AppDesignToken.movementGroupGap),
         _LoadingBlock(height: 320),
-        SizedBox(height: 16.h),
+        SizedBox(height: AppDesignToken.movementGroupGap),
         _LoadingBlock(height: 320),
       ],
     );
@@ -899,10 +905,10 @@ class _MovementList extends StatelessWidget {
       children: items
           .map((TrendMovementEntity item) {
             return Padding(
-              padding: EdgeInsets.only(bottom: 12.h),
+              padding: EdgeInsets.only(bottom: AppDesignToken.itemGap),
               child: Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(14.r),
+                padding: EdgeInsets.all(AppDesignToken.cardPadding.top - 2.r),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFEF2F2),
                   borderRadius: BorderRadius.circular(18.r),
@@ -918,7 +924,7 @@ class _MovementList extends StatelessWidget {
                             item.label,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
-                          SizedBox(height: 4.h),
+                          SizedBox(height: AppDesignToken.infoRowGap * 0.5),
                           Text(
                             '${item.previousQuantity} -> ${item.currentQuantity} item',
                             style: Theme.of(context).textTheme.bodyMedium,
@@ -926,7 +932,7 @@ class _MovementList extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(width: 12.w),
+                    SizedBox(width: AppDesignToken.infoRowGap * 1.5),
                     Text(
                       item.quantityDelta.toString(),
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -957,21 +963,26 @@ class _BucketTransactionSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
+         padding: EdgeInsets.fromLTRB(
+           AppDesignToken.cardPadding.left,
+           AppDesignToken.infoRowGap,
+           AppDesignToken.cardPadding.right,
+           AppDesignToken.cardPadding.bottom,
+         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(title, style: Theme.of(context).textTheme.titleLarge),
-            SizedBox(height: 6.h),
+            SizedBox(height: AppDesignToken.infoRowGap * 0.75),
             Text(
               '${transactions.length} transaksi',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            SizedBox(height: 16.h),
+             SizedBox(height: AppDesignToken.movementGroupGap),
             if (transactions.isEmpty)
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 24.h),
+                padding: EdgeInsets.symmetric(vertical: AppDesignToken.movementGroupGap * 1.5),
                 child: Center(
                   child: Text('Belum ada transaksi di bucket ini.'),
                 ),
@@ -981,11 +992,11 @@ class _BucketTransactionSheet extends StatelessWidget {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: transactions.length,
-                  separatorBuilder: (_, _) => SizedBox(height: 10.h),
+                  separatorBuilder: (_, _) => SizedBox(height: AppDesignToken.infoRowGap + 2.h),
                   itemBuilder: (_, int index) {
                     final TransactionEntity tx = transactions[index];
                     return Container(
-                      padding: EdgeInsets.all(14.r),
+                      padding: EdgeInsets.all(AppDesignToken.cardPadding.top - 2.r),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(18.r),
@@ -1001,7 +1012,7 @@ class _BucketTransactionSheet extends StatelessWidget {
                                   tx.invoiceNumber,
                                   style: Theme.of(context).textTheme.titleSmall,
                                 ),
-                                SizedBox(height: 4.h),
+                                SizedBox(height: AppDesignToken.infoRowGap * 0.5),
                                 Text(
                                   formatDateTime(tx.createdAt),
                                   style: Theme.of(context).textTheme.bodySmall,
@@ -1009,7 +1020,7 @@ class _BucketTransactionSheet extends StatelessWidget {
                               ],
                             ),
                           ),
-                          SizedBox(width: 12.w),
+                          SizedBox(width: AppDesignToken.infoRowGap * 1.5),
                           Text(
                             formatCurrency(tx.totalAmount),
                             style: Theme.of(context).textTheme.titleSmall,
@@ -1053,7 +1064,7 @@ class _EmptyTrendState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.r),
@@ -1067,12 +1078,12 @@ class _EmptyTrendState extends StatelessWidget {
             size: 36,
             color: Theme.of(context).colorScheme.primary,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppDesignToken.movementGroupGap),
           Text(
             'Belum ada data ${_rangeLabel(range).toLowerCase()}.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          SizedBox(height: 8.h),
+           SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             'Tambah transaksi dulu biar grafik muncul.',
             style: Theme.of(context).textTheme.bodyMedium,

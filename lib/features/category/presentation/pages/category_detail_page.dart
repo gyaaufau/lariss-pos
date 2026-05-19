@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/utils/formatters.dart';
 import '../cubit/category_detail_cubit.dart';
 
@@ -95,7 +96,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
           return SafeArea(
             child: ListView(
-              padding: EdgeInsets.all(16.r),
+              padding: AppDesignToken.cardPadding,
               children: <Widget>[
                 _DetailCard(
                   title: category.name,
@@ -104,14 +105,14 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                       label: 'Dibuat',
                       value: formatDateTime(category.createdAt),
                     ),
-                    SizedBox(height: 12.h),
+SizedBox(height: AppDesignToken.infoRowGap),
                     _InfoRow(
                       label: 'Diubah',
                       value: formatDateTime(category.updatedAt),
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
+SizedBox(height: AppDesignToken.cardTitleGap),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -120,7 +121,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                     label: const Text('Edit kategori'),
                   ),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: AppDesignToken.buttonGap),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -147,7 +148,7 @@ class _DetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.r),
+      padding: AppDesignToken.cardPadding,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
@@ -157,7 +158,7 @@ class _DetailCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(title, style: Theme.of(context).textTheme.headlineSmall),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppDesignToken.sectionGap),
           ...children,
         ],
       ),
@@ -176,7 +177,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(child: Text(label)),
-        SizedBox(width: 16.w),
+                    SizedBox(width: AppDesignToken.movementGroupGap),
         Text(value, style: Theme.of(context).textTheme.titleSmall),
       ],
     );

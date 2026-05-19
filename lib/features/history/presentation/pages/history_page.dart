@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../domain/transaction_domain/domain/entities/transaction_entity.dart';
 import '../cubit/history_cubit.dart';
@@ -106,7 +107,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
           return SafeArea(
             child: Padding(
-              padding: EdgeInsets.all(16.r),
+              padding: AppDesignToken.cardPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -114,7 +115,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     'Semua invoice tersimpan lokal.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  SizedBox(height: 20.h),
+                  SizedBox(height: AppDesignToken.sectionGap),
                   Expanded(
                     child: isLoading
                         ? const Center(child: CircularProgressIndicator())
@@ -126,7 +127,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             child: ListView.separated(
                               itemCount: groupedTransactions.length,
                               separatorBuilder: (_, _) =>
-                                  SizedBox(height: 20.h),
+                                  SizedBox(height: AppDesignToken.sectionGap),
                               itemBuilder: (context, index) {
                                 final group = groupedTransactions[index];
                                 return Column(
@@ -142,13 +143,13 @@ class _HistoryPageState extends State<HistoryPage> {
                                             color: const Color(0xFF475569),
                                           ),
                                     ),
-                                    SizedBox(height: 12.h),
+                                    SizedBox(height: AppDesignToken.subtitleContentGap),
                                     Column(
                                       children: group.transactions
                                           .map(
                                             (transaction) => Padding(
                                               padding: EdgeInsets.only(
-                                                bottom: 12.h,
+                                                bottom: AppDesignToken.itemGap,
                                               ),
                                               child: _TransactionCard(
                                                 transaction: transaction,
@@ -197,7 +198,7 @@ class _TransactionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20.r),
         child: Ink(
-          padding: EdgeInsets.all(18.r),
+           padding: EdgeInsets.all(AppDesignToken.cardPadding.top + 2.r),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(color: const Color(0xFFE2E8F0)),
@@ -221,12 +222,12 @@ class _TransactionCard extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: AppDesignToken.infoRowGap),
               Text(
                 '${transaction.totalItem} item • ${formatDateTime(transaction.createdAt)}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: AppDesignToken.subtitleContentGap),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -253,7 +254,7 @@ class _EmptyHistoryState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24.r),
+      padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24.r),
@@ -267,12 +268,12 @@ class _EmptyHistoryState extends StatelessWidget {
             size: 36,
             color: Theme.of(context).colorScheme.primary,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppDesignToken.movementGroupGap),
           Text(
             'Belum ada riwayat transaksi.',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppDesignToken.infoRowGap),
           Text(
             'Begitu checkout selesai dibuat, semua invoice akan tampil di sini lengkap dengan detail item.',
             textAlign: TextAlign.center,

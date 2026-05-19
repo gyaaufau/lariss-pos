@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../domain/cart_domain/domain/entities/cart_item_entity.dart';
 import '../../../../domain/transaction_domain/domain/entities/transaction_entity.dart';
@@ -124,15 +125,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
             child: cartState.isEmpty
                 ? const _EmptyCheckoutState()
                 : ListView(
-                    padding: EdgeInsets.all(16.r),
+                    padding: AppDesignToken.cardPadding,
                     children: <Widget>[
                       Text(
                         'Review belanja dan selesaikan pembayaran.',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      SizedBox(height: 20.h),
-                      Container(
-                        padding: EdgeInsets.all(16.r),
+                      SizedBox(height: AppDesignToken.sectionGap),
+                       Container(
+                         padding: AppDesignToken.cardPadding,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20.r),
@@ -145,15 +146,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               'Ringkasan item',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
-                            SizedBox(height: 12.h),
+                             SizedBox(height: AppDesignToken.subtitleContentGap),
                             ...cartState.items.map(
-                              (CartItemEntity item) => Padding(
-                                padding: EdgeInsets.only(bottom: 12.h),
+                               (CartItemEntity item) => Padding(
+                                 padding: EdgeInsets.only(bottom: AppDesignToken.itemGap),
                                 child: _CheckoutItemTile(item: item),
                               ),
                             ),
                             const Divider(),
-                            SizedBox(height: 8.h),
+                             SizedBox(height: AppDesignToken.infoRowGap),
                             _SummaryRow(
                               label: 'Total item',
                               value: '${cartState.totalItems}',
@@ -166,9 +167,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 20.h),
-                      Container(
-                        padding: EdgeInsets.all(16.r),
+                      SizedBox(height: AppDesignToken.sectionGap),
+                       Container(
+                         padding: AppDesignToken.cardPadding,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20.r),
@@ -181,7 +182,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               'Pembayaran',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
-                            SizedBox(height: 12.h),
+                             SizedBox(height: AppDesignToken.subtitleContentGap),
                             TextField(
                               controller: _paidAmountController,
                               readOnly: true,
@@ -192,14 +193,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               onTapOutside: (_) =>
                                   FocusScope.of(context).unfocus(),
                             ),
-                            SizedBox(height: 16.h),
+                             SizedBox(height: AppDesignToken.movementGroupGap),
                             _CheckoutNumpad(
                               onDigitPressed: _appendPaidAmount,
                               onBackspacePressed: _removeLastPaidAmountDigit,
                               onClearPressed: () =>
                                   _setPaidAmount(cartState.totalAmount),
                             ),
-                            SizedBox(height: 12.h),
+                             SizedBox(height: AppDesignToken.subtitleContentGap),
                             _SummaryRow(
                               label: 'Kembalian',
                               value: changePreview < 0
@@ -209,7 +210,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   ? const Color(0xFFB91C1C)
                                   : const Color(0xFF166534),
                             ),
-                            SizedBox(height: 16.h),
+                             SizedBox(height: AppDesignToken.movementGroupGap),
                             SizedBox(
                               width: double.infinity,
                               child: FilledButton(
@@ -306,7 +307,7 @@ class _NumpadButton extends StatelessWidget {
     return FilledButton.tonal(
       onPressed: onPressed,
       style: FilledButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: AppDesignToken.infoRowGap + 2.h),
         minimumSize: const Size(0, 48),
         backgroundColor: isPrimary
             ? colorScheme.primary
@@ -331,7 +332,7 @@ class _NumpadButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Icon(icon, size: 16),
-                SizedBox(width: 6.w),
+                 SizedBox(width: AppDesignToken.infoRowGap * 0.75),
                 Flexible(
                   child: Text(
                     label,
@@ -362,13 +363,13 @@ class CheckoutSuccessPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16.r),
+           padding: AppDesignToken.cardPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(24.r),
+                 padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24.r),
@@ -390,17 +391,17 @@ class CheckoutSuccessPage extends StatelessWidget {
                         size: 28,
                       ),
                     ),
-                    SizedBox(height: 16.h),
+                    SizedBox(height: AppDesignToken.movementGroupGap),
                     Text(
                       'Transaksi berhasil disimpan.',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: AppDesignToken.infoRowGap),
                     Text(
                       transaction.invoiceNumber,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: AppDesignToken.sectionGap),
                     _SummaryRow(
                       label: 'Total',
                       value: formatCurrency(transaction.totalAmount),
@@ -425,7 +426,7 @@ class CheckoutSuccessPage extends StatelessWidget {
                   child: const Text('Kembali ke kasir'),
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: AppDesignToken.subtitleContentGap),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
@@ -462,7 +463,7 @@ class _CheckoutItemTile extends StatelessWidget {
                 item.productName,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              SizedBox(height: 4.h),
+               SizedBox(height: AppDesignToken.infoRowGap * 0.5),
               Text(
                 '${item.quantity} x ${formatCurrency(item.price)}',
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -470,7 +471,7 @@ class _CheckoutItemTile extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: 12.w),
+           SizedBox(width: AppDesignToken.infoRowGap * 1.5),
         Text(formatCurrency(item.subtotal)),
       ],
     );
@@ -499,11 +500,11 @@ class _SummaryRow extends StatelessWidget {
             ?.copyWith(color: valueColor);
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
+       padding: EdgeInsets.only(bottom: AppDesignToken.infoRowGap),
       child: Row(
         children: <Widget>[
           Expanded(child: Text(label)),
-          SizedBox(width: 12.w),
+          SizedBox(width: AppDesignToken.infoRowGap * 1.5),
           Text(value, style: style),
         ],
       ),
@@ -518,7 +519,7 @@ class _EmptyCheckoutState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(24.r),
+        padding: EdgeInsets.all(AppDesignToken.cardPadding.top * 1.5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -527,12 +528,12 @@ class _EmptyCheckoutState extends StatelessWidget {
               size: 40,
               color: Theme.of(context).colorScheme.primary,
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: AppDesignToken.movementGroupGap),
             Text(
               'Cart masih kosong.',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: AppDesignToken.infoRowGap),
             Text(
               'Balik ke halaman kasir lalu tambahkan produk dulu.',
               textAlign: TextAlign.center,

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/app_router.dart';
+import '../../../../core/tokens/app_design_token.dart';
 import '../../../../core/widgets/app_section_tile.dart';
 import '../cubit/app_settings_cubit.dart';
 import '../cubit/profile_cubit.dart';
@@ -72,16 +73,16 @@ class _ProfilePageState extends State<ProfilePage> {
             child: RefreshIndicator(
               onRefresh: () => context.read<ProfileCubit>().loadProfile(),
               child: ListView(
-                padding: EdgeInsets.all(16.r),
+                padding: AppDesignToken.cardPadding,
                 children: <Widget>[
                   AppSectionTile(
                     title: 'Kelola profile',
                     icon: Icons.store_outlined,
                     onTap: () => context.push(AppRouter.storeProfilePath),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: AppDesignToken.tileGap),
                   Container(
-                    padding: EdgeInsets.all(20.r),
+                    padding: AppDesignToken.cardPadding,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(24.r),
@@ -102,7 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Color(0xFF16A34A),
                           ),
                         ),
-                        SizedBox(width: 14.w),
+                        SizedBox(width: AppDesignToken.cardTitleGap + 2.w),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,7 +122,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Container(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 10.w,
-                                      vertical: 6.h,
+                                      vertical:
+                                          AppDesignToken.infoRowGap * 0.75,
                                     ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFFFF7ED),
@@ -140,7 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 8.h),
+                              SizedBox(height: AppDesignToken.infoRowGap),
                               Text(
                                 'Backup database toko ke Google Drive akan hadir di update berikutnya.',
                                 style: theme.textTheme.bodyMedium,
@@ -151,9 +153,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: AppDesignToken.sectionGap),
                   Container(
-                    padding: EdgeInsets.all(20.r),
+                    padding: AppDesignToken.cardPadding,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(24.r),
@@ -168,12 +170,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        SizedBox(height: 8.h),
+                        SizedBox(height: AppDesignToken.infoRowGap),
                         Text(
                           'Atur perilaku dasar aplikasi untuk operasional harian.',
                           style: theme.textTheme.bodyMedium,
                         ),
-                        SizedBox(height: 12.h),
+                        SizedBox(height: AppDesignToken.subtitleContentGap),
                         SwitchListTile(
                           value: state.settings.lowStockAlertEnabled,
                           contentPadding: EdgeInsets.zero,
@@ -191,6 +193,24 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(height: AppDesignToken.sectionGap),
+                  AppSectionTile(
+                    title: 'Kelola produk',
+                    icon: Icons.inventory_outlined,
+                    onTap: () => context.push(AppRouter.productsPath),
+                  ),
+                  SizedBox(height: AppDesignToken.tileGap),
+                  AppSectionTile(
+                    title: 'Kelola kategori',
+                    icon: Icons.category_outlined,
+                    onTap: () => context.push(AppRouter.categoriesPath),
+                  ),
+                  SizedBox(height: AppDesignToken.tileGap),
+                  AppSectionTile(
+                    title: 'Kelola stok',
+                    icon: Icons.inventory_2_outlined,
+                    onTap: () => context.push(AppRouter.stockPath),
                   ),
                 ],
               ),
